@@ -451,7 +451,7 @@
 <body>
     <!-- Écran de connexion -->
     <div class="login-container" id="loginContainer">
-        <h1>💬 Messagerie </h1>
+        <h1>💬 Messagerie N8N</h1>
         <div class="input-group">
             <label>Nom d'utilisateur</label>
             <input type="text" id="usernameInput" placeholder="Entrez votre pseudo">
@@ -509,54 +509,58 @@
         let contacts = {};
         let conversations = {};
 
-        // Charger les données
-        async function loadData() {
-            // Charger les utilisateurs
+        // Charger les données depuis localStorage
+        function loadData() {
             try {
-                const usersData = await window.storage.get('users', true);
-                users = JSON.parse(usersData.value);
+                // Charger les utilisateurs
+                const usersData = localStorage.getItem('n8n_users');
+                users = usersData ? JSON.parse(usersData) : {};
+
+                // Charger les contacts et conversations si connecté
+                if (currentUser) {
+                    const contactsData = localStorage.getItem(`n8n_contacts_${currentUser}`);
+                    contacts = contactsData ? JSON.parse(contactsData) : {};
+
+                    const convsData = localStorage.getItem(`n8n_conversations_${currentUser}`);
+                    conversations = convsData ? JSON.parse(convsData) : {};
+                }
             } catch (error) {
-                console.log('Aucun utilisateur existant, initialisation');
+                console.error('Erreur lors du chargement des données:', error);
                 users = {};
-            }
-
-            // Charger les contacts et conversations si connecté
-            if (currentUser) {
-                try {
-                    const contactsData = await window.storage.get(`contacts_${currentUser}`, false);
-                    contacts = JSON.parse(contactsData.value);
-                } catch (error) {
-                    console.log('Aucun contact existant');
-                    contacts = {};
-                }
-
-                try {
-                    const convsData = await window.storage.get(`conversations_${currentUser}`, false);
-                    conversations = JSON.parse(convsData.value);
-                } catch (error) {
-                    console.log('Aucune conversation existante');
-                    conversations = {};
-                }
+                contacts = {};
+                conversations = {};
             }
         }
 
         // Sauvegarder les utilisateurs
-        async function saveUsers() {
-            await window.storage.set('users', JSON.stringify(users), true);
+        function saveUsers() {
+            try {
+                localStorage.setItem('n8n_users', JSON.stringify(users));
+            } catch (error) {
+                console.error('Erreur lors de la sauvegarde des utilisateurs:', error);
+            }
         }
 
         // Sauvegarder les contacts
-        async function saveContacts() {
-            await window.storage.set(`contacts_${currentUser}`, JSON.stringify(contacts), false);
+        function saveContacts() {
+            try {
+                localStorage.setItem(`n8n_contacts_${currentUser}`, JSON.stringify(contacts));
+            } catch (error) {
+                console.error('Erreur lors de la sauvegarde des contacts:', error);
+            }
         }
 
         // Sauvegarder les conversations
-        async function saveConversations() {
-            await window.storage.set(`conversations_${currentUser}`, JSON.stringify(conversations), false);
+        function saveConversations() {
+            try {
+                localStorage.setItem(`n8n_conversations_${currentUser}`, JSON.stringify(conversations));
+            } catch (error) {
+                console.error('Erreur lors de la sauvegarde des conversations:', error);
+            }
         }
 
         // Inscription
-        async function register() {
+        function register() {
             const username = document.getElementById('usernameInput').value.trim();
             const password = document.getElementById('passwordInput').value.trim();
 
@@ -565,15 +569,19 @@
                 return;
             }
 
-            await loadData();
+            loadData();
 
             if (users[username]) {
                 alert('Ce nom d\'utilisateur existe déjà');
                 return;
             }
 
-            users[username] = { password: password, createdAt: new Date().toISOString() };
-            await saveUsers();
+            users[username] = { 
+                password: password, 
+                createdAt: new Date().toISOString() 
+            };
+            
+            saveUsers();
 
             alert('Compte créé avec succès ! Vous pouvez maintenant vous connecter.');
             document.getElementById('usernameInput').value = '';
@@ -581,7 +589,7 @@
         }
 
         // Connexion
-        async function login() {
+        function login() {
             const username = document.getElementById('usernameInput').value.trim();
             const password = document.getElementById('passwordInput').value.trim();
 
@@ -590,7 +598,7 @@
                 return;
             }
 
-            await loadData();
+            loadData();
 
             if (!users[username]) {
                 alert('Utilisateur inconnu. Créez d\'abord un compte.');
@@ -603,7 +611,7 @@
             }
 
             currentUser = username;
-            await loadData();
+            loadData();
 
             document.getElementById('loginContainer').style.display = 'none';
             document.getElementById('mainContainer').classList.add('active');
@@ -623,7 +631,7 @@
         }
 
         // Ajouter un contact
-        async function addContact() {
+        function addContact() {
             const contactName = document.getElementById('newContactInput').value.trim();
 
             if (!contactName) {
@@ -644,8 +652,8 @@
 
             conversations[contactName] = [];
 
-            await saveContacts();
-            await saveConversations();
+            saveContacts();
+            saveConversations();
 
             document.getElementById('newContactInput').value = '';
             renderConversations();
@@ -778,7 +786,7 @@
             });
 
             input.value = '';
-            await saveConversations();
+            saveConversations();
             renderMessages();
             renderConversations();
 
@@ -788,7 +796,7 @@
             // Envoyer à N8N
             const n8nResponse = await sendToN8N(text, currentChat);
 
-            setTimeout(async () => {
+            setTimeout(() => {
                 document.getElementById('typingIndicator').classList.remove('active');
 
                 const contact = contacts[currentChat];
@@ -802,7 +810,7 @@
                           new Date().getMinutes().toString().padStart(2, '0')
                 });
 
-                await saveConversations();
+                saveConversations();
                 renderMessages();
                 renderConversations();
             }, 1500);
@@ -822,9 +830,9 @@
         }
 
         // Initialisation
-        (async function init() {
-            await loadData();
-            console.log('Messagerie N8N initialisée');
+        (function init() {
+            loadData();
+            console.log('Messagerie N8N initialisée avec localStorage');
         })();
     </script>
 </body>
