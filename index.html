@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messagerie en ligne</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1000px;
+            height: 90vh;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            display: flex;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            width: 300px;
+            background: #f8f9fa;
+            border-right: 1px solid #e0e0e0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            background: #667eea;
+            color: white;
+        }
+
+        .sidebar-header h2 {
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+
+        .user-status {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .conversations {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .conversation {
+            padding: 15px 20px;
+            border-bottom: 1px solid #e0e0e0;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .conversation:hover {
+            background: #e8eaf6;
+        }
+
+        .conversation.active {
+            background: #e8eaf6;
+            border-left: 3px solid #667eea;
+        }
+
+        .conversation-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .conversation-preview {
+            font-size: 13px;
+            color: #666;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .chat-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-header {
+            padding: 20px;
+            background: white;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .chat-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #667eea;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .chat-info h3 {
+            font-size: 16px;
+            color: #333;
+        }
+
+        .chat-status {
+            font-size: 12px;
+            color: #4caf50;
+        }
+
+        .messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: #fafafa;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .message.sent {
+            flex-direction: row-reverse;
+        }
+
+        .message-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #667eea;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .message.sent .message-avatar {
+            background: #764ba2;
+        }
+
+        .message-content {
+            max-width: 60%;
+        }
+
+        .message-bubble {
+            padding: 10px 15px;
+            border-radius: 18px;
+            background: white;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .message.sent .message-bubble {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .message-time {
+            font-size: 11px;
+            color: #999;
+            margin-top: 5px;
+            padding: 0 5px;
+        }
+
+        .input-area {
+            padding: 20px;
+            background: white;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            gap: 10px;
+        }
+
+        .input-area input {
+            flex: 1;
+            padding: 12px 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 25px;
+            font-size: 14px;
+            outline: none;
+            transition: border 0.3s;
+        }
+
+        .input-area input:focus {
+            border-color: #667eea;
+        }
+
+        .send-btn {
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: transform 0.2s;
+        }
+
+        .send-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .send-btn:active {
+            transform: scale(0.95);
+        }
+
+        .empty-state {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+        }
+
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+            }
+            
+            .chat-area {
+                display: none;
+            }
+            
+            .chat-area.active {
+                display: flex;
+            }
+            
+            .sidebar.hidden {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h2>Messagerie</h2>
+                <div class="user-status">En ligne</div>
+            </div>
+            <div class="conversations" id="conversations">
+                <!-- Les conversations seront ajoutées ici -->
+            </div>
+        </div>
+
+        <div class="chat-area" id="chatArea">
+            <div class="empty-state">
+                <div class="empty-state-icon">💬</div>
+                <h3>Sélectionnez une conversation</h3>
+                <p>Choisissez un contact pour commencer à discuter</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Données de démonstration
+        const contacts = [
+            { id: 1, name: 'Marie Dupont', avatar: 'MD', status: 'En ligne' },
+            { id: 2, name: 'Thomas Martin', avatar: 'TM', status: 'En ligne' },
+            { id: 3, name: 'Sophie Bernard', avatar: 'SB', status: 'Absent' },
+            { id: 4, name: 'Lucas Petit', avatar: 'LP', status: 'En ligne' }
+        ];
+
+        let conversations = {};
+        let currentChat = null;
+
+        // Initialiser les conversations
+        contacts.forEach(contact => {
+            conversations[contact.id] = [];
+        });
+
+        // Afficher les conversations
+        function renderConversations() {
+            const container = document.getElementById('conversations');
+            container.innerHTML = contacts.map(contact => {
+                const messages = conversations[contact.id];
+                const lastMsg = messages.length > 0 ? messages[messages.length - 1].text : 'Aucun message';
+                return `
+                    <div class="conversation ${currentChat === contact.id ? 'active' : ''}" onclick="openChat(${contact.id})">
+                        <div class="conversation-name">${contact.name}</div>
+                        <div class="conversation-preview">${lastMsg}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Ouvrir une conversation
+        function openChat(contactId) {
+            currentChat = contactId;
+            const contact = contacts.find(c => c.id === contactId);
+            const chatArea = document.getElementById('chatArea');
+            
+            chatArea.innerHTML = `
+                <div class="chat-header">
+                    <div class="chat-avatar">${contact.avatar}</div>
+                    <div class="chat-info">
+                        <h3>${contact.name}</h3>
+                        <div class="chat-status">${contact.status}</div>
+                    </div>
+                </div>
+                <div class="messages" id="messages"></div>
+                <div class="input-area">
+                    <input type="text" id="messageInput" placeholder="Écrivez votre message..." onkeypress="handleKeyPress(event)">
+                    <button class="send-btn" onclick="sendMessage()">Envoyer</button>
+                </div>
+            `;
+
+            renderMessages();
+            renderConversations();
+            document.getElementById('messageInput').focus();
+        }
+
+        // Afficher les messages
+        function renderMessages() {
+            const container = document.getElementById('messages');
+            const messages = conversations[currentChat];
+            
+            container.innerHTML = messages.map(msg => `
+                <div class="message ${msg.sent ? 'sent' : 'received'}">
+                    <div class="message-avatar">${msg.avatar}</div>
+                    <div class="message-content">
+                        <div class="message-bubble">${msg.text}</div>
+                        <div class="message-time">${msg.time}</div>
+                    </div>
+                </div>
+            `).join('');
+
+            container.scrollTop = container.scrollHeight;
+        }
+
+        // Envoyer un message
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const text = input.value.trim();
+            
+            if (text && currentChat) {
+                const now = new Date();
+                const time = now.getHours().toString().padStart(2, '0') + ':' + 
+                           now.getMinutes().toString().padStart(2, '0');
+                
+                conversations[currentChat].push({
+                    text: text,
+                    sent: true,
+                    avatar: 'Moi',
+                    time: time
+                });
+
+                input.value = '';
+                renderMessages();
+                renderConversations();
+
+                // Simuler une réponse
+                setTimeout(() => {
+                    const contact = contacts.find(c => c.id === currentChat);
+                    const responses = [
+                        'C\'est noté !',
+                        'D\'accord, merci !',
+                        'Parfait 👍',
+                        'Je regarde ça',
+                        'Compris !'
+                    ];
+                    const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+                    
+                    conversations[currentChat].push({
+                        text: randomResponse,
+                        sent: false,
+                        avatar: contact.avatar,
+                        time: new Date().getHours().toString().padStart(2, '0') + ':' + 
+                              new Date().getMinutes().toString().padStart(2, '0')
+                    });
+
+                    if (currentChat) {
+                        renderMessages();
+                        renderConversations();
+                    }
+                }, 1000 + Math.random() * 2000);
+            }
+        }
+
+        // Gérer la touche Entrée
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        // Initialiser
+        renderConversations();
+    </script>
+</body>
+</html>
