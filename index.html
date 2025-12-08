@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Messagerie en ligne</title>
+    <title>Messagerie N8N</title>
     <style>
         * {
             margin: 0;
@@ -20,19 +20,86 @@
             align-items: center;
         }
 
+        .login-container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            width: 90%;
+            max-width: 400px;
+        }
+
+        .login-container h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 30px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
         .container {
             width: 90%;
-            max-width: 1000px;
+            max-width: 1200px;
             height: 90vh;
             background: white;
             border-radius: 20px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            display: flex;
+            display: none;
             overflow: hidden;
         }
 
+        .container.active {
+            display: flex;
+        }
+
         .sidebar {
-            width: 300px;
+            width: 320px;
             background: #f8f9fa;
             border-right: 1px solid #e0e0e0;
             display: flex;
@@ -46,13 +113,94 @@
         }
 
         .sidebar-header h2 {
-            font-size: 20px;
+            font-size: 18px;
             margin-bottom: 5px;
         }
 
-        .user-status {
-            font-size: 12px;
+        .user-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .user-name {
+            font-size: 14px;
             opacity: 0.9;
+        }
+
+        .logout-btn {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid white;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .n8n-config {
+            padding: 15px;
+            background: #e8f5e9;
+            border-left: 3px solid #4caf50;
+            margin: 10px;
+            border-radius: 5px;
+        }
+
+        .n8n-config h3 {
+            font-size: 12px;
+            color: #2e7d32;
+            margin-bottom: 8px;
+        }
+
+        .n8n-config input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #4caf50;
+            border-radius: 5px;
+            font-size: 12px;
+        }
+
+        .n8n-status {
+            margin-top: 8px;
+            font-size: 11px;
+            color: #2e7d32;
+        }
+
+        .add-contact-section {
+            padding: 15px;
+            background: #fff3e0;
+            margin: 10px;
+            border-radius: 8px;
+        }
+
+        .add-contact-section h3 {
+            font-size: 13px;
+            margin-bottom: 8px;
+            color: #e65100;
+        }
+
+        .add-contact-form {
+            display: flex;
+            gap: 5px;
+        }
+
+        .add-contact-form input {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ffb74d;
+            border-radius: 5px;
+            font-size: 12px;
+        }
+
+        .add-contact-form button {
+            padding: 8px 12px;
+            background: #ff9800;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
         }
 
         .conversations {
@@ -90,6 +238,15 @@
             text-overflow: ellipsis;
         }
 
+        .online-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: #4caf50;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+
         .chat-area {
             flex: 1;
             display: flex;
@@ -106,15 +263,16 @@
         }
 
         .chat-avatar {
-            width: 40px;
-            height: 40px;
+            width: 45px;
+            height: 45px;
             border-radius: 50%;
-            background: #667eea;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
             font-weight: bold;
+            font-size: 16px;
         }
 
         .chat-info h3 {
@@ -135,9 +293,21 @@
         }
 
         .message {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             display: flex;
-            gap: 10px;
+            gap: 12px;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .message.sent {
@@ -145,15 +315,15 @@
         }
 
         .message-avatar {
-            width: 32px;
-            height: 32px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
             background: #667eea;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 12px;
+            font-size: 13px;
             font-weight: bold;
             flex-shrink: 0;
         }
@@ -163,14 +333,16 @@
         }
 
         .message-content {
-            max-width: 60%;
+            max-width: 65%;
         }
 
         .message-bubble {
-            padding: 10px 15px;
+            padding: 12px 16px;
             border-radius: 18px;
             background: white;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+            word-wrap: break-word;
+            line-height: 1.4;
         }
 
         .message.sent .message-bubble {
@@ -185,6 +357,16 @@
             padding: 0 5px;
         }
 
+        .n8n-indicator {
+            display: inline-block;
+            background: #4caf50;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 10px;
+            margin-left: 5px;
+        }
+
         .input-area {
             padding: 20px;
             background: white;
@@ -195,12 +377,11 @@
 
         .input-area input {
             flex: 1;
-            padding: 12px 20px;
+            padding: 14px 20px;
             border: 1px solid #e0e0e0;
             border-radius: 25px;
             font-size: 14px;
             outline: none;
-            transition: border 0.3s;
         }
 
         .input-area input:focus {
@@ -208,7 +389,7 @@
         }
 
         .send-btn {
-            padding: 12px 30px;
+            padding: 14px 30px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
@@ -220,10 +401,6 @@
 
         .send-btn:hover {
             transform: scale(1.05);
-        }
-
-        .send-btn:active {
-            transform: scale(0.95);
         }
 
         .empty-state {
@@ -238,6 +415,18 @@
         .empty-state-icon {
             font-size: 64px;
             margin-bottom: 20px;
+        }
+
+        .typing-indicator {
+            display: none;
+            padding: 10px;
+            color: #999;
+            font-size: 13px;
+            font-style: italic;
+        }
+
+        .typing-indicator.active {
+            display: block;
         }
 
         @media (max-width: 768px) {
@@ -260,15 +449,48 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="sidebar" id="sidebar">
+    <!-- Écran de connexion -->
+    <div class="login-container" id="loginContainer">
+        <h1>💬 Messagerie N8N</h1>
+        <div class="input-group">
+            <label>Nom d'utilisateur</label>
+            <input type="text" id="usernameInput" placeholder="Entrez votre pseudo">
+        </div>
+        <div class="input-group">
+            <label>Mot de passe</label>
+            <input type="password" id="passwordInput" placeholder="Entrez votre mot de passe">
+        </div>
+        <button class="btn" onclick="login()">Se connecter</button>
+        <button class="btn btn-secondary" onclick="register()">Créer un compte</button>
+    </div>
+
+    <!-- Application principale -->
+    <div class="container" id="mainContainer">
+        <div class="sidebar">
             <div class="sidebar-header">
-                <h2>Messagerie</h2>
-                <div class="user-status">En ligne</div>
+                <h2>Messagerie N8N</h2>
+                <div class="user-info">
+                    <span class="user-name" id="currentUser"></span>
+                    <button class="logout-btn" onclick="logout()">Déconnexion</button>
+                </div>
             </div>
-            <div class="conversations" id="conversations">
-                <!-- Les conversations seront ajoutées ici -->
+
+            <div class="n8n-config">
+                <h3>🔗 Configuration N8N</h3>
+                <input type="text" id="n8nWebhook" placeholder="URL du webhook N8N" 
+                       value="https://votre-instance.n8n.cloud/webhook/messagerie">
+                <div class="n8n-status">✅ Webhook configuré - Les messages seront envoyés à N8N</div>
             </div>
+
+            <div class="add-contact-section">
+                <h3>➕ Ajouter un contact</h3>
+                <div class="add-contact-form">
+                    <input type="text" id="newContactInput" placeholder="Nom du contact">
+                    <button onclick="addContact()">Ajouter</button>
+                </div>
+            </div>
+
+            <div class="conversations" id="conversations"></div>
         </div>
 
         <div class="chat-area" id="chatArea">
@@ -281,31 +503,165 @@
     </div>
 
     <script>
-        // Données de démonstration
-        const contacts = [
-            { id: 1, name: 'Marie Dupont', avatar: 'MD', status: 'En ligne' },
-            { id: 2, name: 'Thomas Martin', avatar: 'TM', status: 'En ligne' },
-            { id: 3, name: 'Sophie Bernard', avatar: 'SB', status: 'Absent' },
-            { id: 4, name: 'Lucas Petit', avatar: 'LP', status: 'En ligne' }
-        ];
-
-        let conversations = {};
+        let currentUser = null;
         let currentChat = null;
+        let users = {};
+        let contacts = {};
+        let conversations = {};
 
-        // Initialiser les conversations
-        contacts.forEach(contact => {
-            conversations[contact.id] = [];
-        });
+        // Charger les données
+        async function loadData() {
+            try {
+                const usersData = await window.storage.get('users', true);
+                users = usersData ? JSON.parse(usersData.value) : {};
+
+                if (currentUser) {
+                    const contactsData = await window.storage.get(`contacts_${currentUser}`, false);
+                    contacts = contactsData ? JSON.parse(contactsData.value) : {};
+
+                    const convsData = await window.storage.get(`conversations_${currentUser}`, false);
+                    conversations = convsData ? JSON.parse(convsData.value) : {};
+                }
+            } catch (error) {
+                console.log('Initialisation des données');
+                users = {};
+                contacts = {};
+                conversations = {};
+            }
+        }
+
+        // Sauvegarder les utilisateurs
+        async function saveUsers() {
+            await window.storage.set('users', JSON.stringify(users), true);
+        }
+
+        // Sauvegarder les contacts
+        async function saveContacts() {
+            await window.storage.set(`contacts_${currentUser}`, JSON.stringify(contacts), false);
+        }
+
+        // Sauvegarder les conversations
+        async function saveConversations() {
+            await window.storage.set(`conversations_${currentUser}`, JSON.stringify(conversations), false);
+        }
+
+        // Inscription
+        async function register() {
+            const username = document.getElementById('usernameInput').value.trim();
+            const password = document.getElementById('passwordInput').value.trim();
+
+            if (!username || !password) {
+                alert('Veuillez remplir tous les champs');
+                return;
+            }
+
+            await loadData();
+
+            if (users[username]) {
+                alert('Ce nom d\'utilisateur existe déjà');
+                return;
+            }
+
+            users[username] = { password: password, createdAt: new Date().toISOString() };
+            await saveUsers();
+
+            alert('Compte créé avec succès ! Vous pouvez maintenant vous connecter.');
+            document.getElementById('usernameInput').value = '';
+            document.getElementById('passwordInput').value = '';
+        }
+
+        // Connexion
+        async function login() {
+            const username = document.getElementById('usernameInput').value.trim();
+            const password = document.getElementById('passwordInput').value.trim();
+
+            if (!username || !password) {
+                alert('Veuillez remplir tous les champs');
+                return;
+            }
+
+            await loadData();
+
+            if (!users[username]) {
+                alert('Utilisateur inconnu. Créez d\'abord un compte.');
+                return;
+            }
+
+            if (users[username].password !== password) {
+                alert('Mot de passe incorrect');
+                return;
+            }
+
+            currentUser = username;
+            await loadData();
+
+            document.getElementById('loginContainer').style.display = 'none';
+            document.getElementById('mainContainer').classList.add('active');
+            document.getElementById('currentUser').textContent = currentUser;
+
+            renderConversations();
+        }
+
+        // Déconnexion
+        function logout() {
+            currentUser = null;
+            currentChat = null;
+            document.getElementById('loginContainer').style.display = 'block';
+            document.getElementById('mainContainer').classList.remove('active');
+            document.getElementById('usernameInput').value = '';
+            document.getElementById('passwordInput').value = '';
+        }
+
+        // Ajouter un contact
+        async function addContact() {
+            const contactName = document.getElementById('newContactInput').value.trim();
+
+            if (!contactName) {
+                alert('Entrez un nom de contact');
+                return;
+            }
+
+            if (contacts[contactName]) {
+                alert('Ce contact existe déjà');
+                return;
+            }
+
+            contacts[contactName] = {
+                name: contactName,
+                avatar: contactName.substring(0, 2).toUpperCase(),
+                addedAt: new Date().toISOString()
+            };
+
+            conversations[contactName] = [];
+
+            await saveContacts();
+            await saveConversations();
+
+            document.getElementById('newContactInput').value = '';
+            renderConversations();
+        }
 
         // Afficher les conversations
         function renderConversations() {
             const container = document.getElementById('conversations');
-            container.innerHTML = contacts.map(contact => {
-                const messages = conversations[contact.id];
-                const lastMsg = messages.length > 0 ? messages[messages.length - 1].text : 'Aucun message';
+            const contactList = Object.values(contacts);
+
+            if (contactList.length === 0) {
+                container.innerHTML = '<div style="padding: 20px; text-align: center; color: #999;">Aucun contact. Ajoutez-en un !</div>';
+                return;
+            }
+
+            container.innerHTML = contactList.map(contact => {
+                const messages = conversations[contact.name] || [];
+                const lastMsg = messages.length > 0 ? messages[messages.length - 1].text : 'Nouvelle conversation';
+
                 return `
-                    <div class="conversation ${currentChat === contact.id ? 'active' : ''}" onclick="openChat(${contact.id})">
-                        <div class="conversation-name">${contact.name}</div>
+                    <div class="conversation ${currentChat === contact.name ? 'active' : ''}" 
+                         onclick="openChat('${contact.name}')">
+                        <div class="conversation-name">
+                            <span class="online-indicator"></span>
+                            ${contact.name}
+                        </div>
                         <div class="conversation-preview">${lastMsg}</div>
                     </div>
                 `;
@@ -313,22 +669,24 @@
         }
 
         // Ouvrir une conversation
-        function openChat(contactId) {
-            currentChat = contactId;
-            const contact = contacts.find(c => c.id === contactId);
+        function openChat(contactName) {
+            currentChat = contactName;
+            const contact = contacts[contactName];
             const chatArea = document.getElementById('chatArea');
-            
+
             chatArea.innerHTML = `
                 <div class="chat-header">
                     <div class="chat-avatar">${contact.avatar}</div>
                     <div class="chat-info">
-                        <h3>${contact.name}</h3>
-                        <div class="chat-status">${contact.status}</div>
+                        <h3>${contact.name} <span class="n8n-indicator">N8N</span></h3>
+                        <div class="chat-status">En ligne</div>
                     </div>
                 </div>
                 <div class="messages" id="messages"></div>
+                <div class="typing-indicator" id="typingIndicator">⌨️ N8N traite votre message...</div>
                 <div class="input-area">
-                    <input type="text" id="messageInput" placeholder="Écrivez votre message..." onkeypress="handleKeyPress(event)">
+                    <input type="text" id="messageInput" placeholder="Écrivez votre message..." 
+                           onkeypress="if(event.key==='Enter') sendMessage()">
                     <button class="send-btn" onclick="sendMessage()">Envoyer</button>
                 </div>
             `;
@@ -341,8 +699,13 @@
         // Afficher les messages
         function renderMessages() {
             const container = document.getElementById('messages');
-            const messages = conversations[currentChat];
-            
+            const messages = conversations[currentChat] || [];
+
+            if (messages.length === 0) {
+                container.innerHTML = '<div style="text-align: center; color: #999; padding: 20px;">Aucun message. Commencez la conversation !</div>';
+                return;
+            }
+
             container.innerHTML = messages.map(msg => `
                 <div class="message ${msg.sent ? 'sent' : 'received'}">
                     <div class="message-avatar">${msg.avatar}</div>
@@ -356,64 +719,103 @@
             container.scrollTop = container.scrollHeight;
         }
 
-        // Envoyer un message
-        function sendMessage() {
-            const input = document.getElementById('messageInput');
-            const text = input.value.trim();
-            
-            if (text && currentChat) {
-                const now = new Date();
-                const time = now.getHours().toString().padStart(2, '0') + ':' + 
-                           now.getMinutes().toString().padStart(2, '0');
-                
-                conversations[currentChat].push({
-                    text: text,
-                    sent: true,
-                    avatar: 'Moi',
-                    time: time
+        // Envoyer à N8N
+        async function sendToN8N(message, contact) {
+            const webhookUrl = document.getElementById('n8nWebhook').value;
+
+            if (!webhookUrl || webhookUrl.includes('votre-instance')) {
+                console.log('Webhook N8N non configuré - simulation locale');
+                return null;
+            }
+
+            try {
+                const response = await fetch(webhookUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        user: currentUser,
+                        contact: contact,
+                        message: message,
+                        timestamp: new Date().toISOString()
+                    })
                 });
 
-                input.value = '';
+                const data = await response.json();
+                return data.response || null;
+            } catch (error) {
+                console.error('Erreur N8N:', error);
+                return null;
+            }
+        }
+
+        // Envoyer un message
+        async function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const text = input.value.trim();
+
+            if (!text || !currentChat) return;
+
+            const now = new Date();
+            const time = now.getHours().toString().padStart(2, '0') + ':' + 
+                       now.getMinutes().toString().padStart(2, '0');
+
+            // Ajouter le message de l'utilisateur
+            conversations[currentChat].push({
+                text: text,
+                sent: true,
+                avatar: currentUser.substring(0, 2).toUpperCase(),
+                time: time
+            });
+
+            input.value = '';
+            await saveConversations();
+            renderMessages();
+            renderConversations();
+
+            // Afficher l'indicateur de saisie
+            document.getElementById('typingIndicator').classList.add('active');
+
+            // Envoyer à N8N
+            const n8nResponse = await sendToN8N(text, currentChat);
+
+            setTimeout(async () => {
+                document.getElementById('typingIndicator').classList.remove('active');
+
+                const contact = contacts[currentChat];
+                const responseText = n8nResponse || getAutoResponse(text);
+
+                conversations[currentChat].push({
+                    text: responseText,
+                    sent: false,
+                    avatar: contact.avatar,
+                    time: new Date().getHours().toString().padStart(2, '0') + ':' + 
+                          new Date().getMinutes().toString().padStart(2, '0')
+                });
+
+                await saveConversations();
                 renderMessages();
                 renderConversations();
-
-                // Simuler une réponse
-                setTimeout(() => {
-                    const contact = contacts.find(c => c.id === currentChat);
-                    const responses = [
-                        'C\'est noté !',
-                        'D\'accord, merci !',
-                        'Parfait 👍',
-                        'Je regarde ça',
-                        'Compris !'
-                    ];
-                    const randomResponse = responses[Math.floor(Math.random() * responses.length)];
-                    
-                    conversations[currentChat].push({
-                        text: randomResponse,
-                        sent: false,
-                        avatar: contact.avatar,
-                        time: new Date().getHours().toString().padStart(2, '0') + ':' + 
-                              new Date().getMinutes().toString().padStart(2, '0')
-                    });
-
-                    if (currentChat) {
-                        renderMessages();
-                        renderConversations();
-                    }
-                }, 1000 + Math.random() * 2000);
-            }
+            }, 1500);
         }
 
-        // Gérer la touche Entrée
-        function handleKeyPress(event) {
-            if (event.key === 'Enter') {
-                sendMessage();
-            }
+        // Réponse automatique (si N8N non configuré)
+        function getAutoResponse(message) {
+            const responses = [
+                'Message bien reçu ! 👍',
+                'Merci pour votre message, je vais traiter ça.',
+                'C\'est noté ! Je reviens vers vous rapidement.',
+                'Parfait, je m\'en occupe tout de suite.',
+                'Compris ! Je prends en compte votre demande.',
+                'Super, merci de l\'info ! 🎉'
+            ];
+            return responses[Math.floor(Math.random() * responses.length)];
         }
 
-        // Initialiser
-        renderConversations();
+        // Initialisation
+        (async function init() {
+            await loadData();
+            console.log('Messagerie N8N initialisée');
+        })();
     </script>
 </body>
 </html>
