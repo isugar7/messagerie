@@ -424,11 +424,7 @@
             </div>
         </div>
 
-        <div class="config-panel" id="configPanel">
-            <h3>🔗 Configuration du Webhook N8N</h3>
-            <input type="text" id="n8nWebhook" placeholder="URL du webhook N8N" 
-                   value="https://n8n.prcz.fr/webhook/03b05e77-2e3f-4002-9677-cdec0cd99f38">
-        </div>
+       
 
         <div class="messages" id="messages">
             <div class="welcome-message">
@@ -565,11 +561,6 @@
             document.getElementById('passwordInput').value = '';
         }
 
-        // Toggle configuration
-        function toggleConfig() {
-            const panel = document.getElementById('configPanel');
-            panel.classList.toggle('active');
-        }
 
         // Afficher les messages
         function renderMessages() {
@@ -600,31 +591,27 @@
 
         // Envoyer à N8N
         async function sendToN8N(message) {
-            const webhookUrl = document.getElementById('n8nWebhook').value;
+    const webhookUrl = 'https://votre-n8n.fr/webhook/chatbot'; // <- URL fixe et non modifiable
 
-            if (!webhookUrl || webhookUrl.includes('votre-instance')) {
-                console.log('Webhook N8N non configuré - réponse automatique');
-                return null;
-            }
+    try {
+        const response = await fetch(webhookUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                user: currentUser,
+                message: message,
+                timestamp: new Date().toISOString()
+            })
+        });
 
-            try {
-                const response = await fetch(webhookUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        user: currentUser,
-                        message: message,
-                        timestamp: new Date().toISOString()
-                    })
-                });
+        const data = await response.json();
+        return data.response || null;
+    } catch (error) {
+        console.error('Erreur N8N:', error);
+        return null;
+    }
+}
 
-                const data = await response.json();
-                return data.response || null;
-            } catch (error) {
-                console.error('Erreur N8N:', error);
-                return null;
-            }
-        }
 
         // Envoyer un message
         async function sendMessage() {
