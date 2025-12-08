@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Messagerie N8N</title>
+    <title>Chatbot N8N</title>
     <style>
         * {
             margin: 0;
@@ -32,7 +32,14 @@
         .login-container h1 {
             text-align: center;
             color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .login-container p {
+            text-align: center;
+            color: #666;
             margin-bottom: 30px;
+            font-size: 14px;
         }
 
         .input-group {
@@ -70,6 +77,7 @@
             font-weight: 600;
             font-size: 16px;
             margin-top: 10px;
+            transition: all 0.3s;
         }
 
         .btn:hover {
@@ -85,12 +93,13 @@
 
         .container {
             width: 90%;
-            max-width: 1200px;
+            max-width: 900px;
             height: 90vh;
             background: white;
             border-radius: 20px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
             display: none;
+            flex-direction: column;
             overflow: hidden;
         }
 
@@ -98,189 +107,95 @@
             display: flex;
         }
 
-        .sidebar {
-            width: 320px;
-            background: #f8f9fa;
-            border-right: 1px solid #e0e0e0;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .sidebar-header {
+        .chat-header {
             padding: 20px;
-            background: #667eea;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-        }
-
-        .sidebar-header h2 {
-            font-size: 18px;
-            margin-bottom: 5px;
-        }
-
-        .user-info {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            margin-top: 10px;
+            justify-content: space-between;
         }
 
-        .user-name {
-            font-size: 14px;
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .bot-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .bot-info h2 {
+            font-size: 18px;
+            margin-bottom: 3px;
+        }
+
+        .bot-status {
+            font-size: 12px;
             opacity: 0.9;
+        }
+
+        .config-btn {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid white;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s;
+        }
+
+        .config-btn:hover {
+            background: rgba(255,255,255,0.3);
         }
 
         .logout-btn {
             background: rgba(255,255,255,0.2);
             border: 1px solid white;
             color: white;
-            padding: 5px 12px;
+            padding: 8px 16px;
             border-radius: 5px;
             cursor: pointer;
-            font-size: 12px;
-        }
-
-        .n8n-config {
-            padding: 15px;
-            background: #e8f5e9;
-            border-left: 3px solid #4caf50;
-            margin: 10px;
-            border-radius: 5px;
-        }
-
-        .n8n-config h3 {
-            font-size: 12px;
-            color: #2e7d32;
-            margin-bottom: 8px;
-        }
-
-        .n8n-config input {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #4caf50;
-            border-radius: 5px;
-            font-size: 12px;
-        }
-
-        .n8n-status {
-            margin-top: 8px;
-            font-size: 11px;
-            color: #2e7d32;
-        }
-
-        .add-contact-section {
-            padding: 15px;
-            background: #fff3e0;
-            margin: 10px;
-            border-radius: 8px;
-        }
-
-        .add-contact-section h3 {
             font-size: 13px;
-            margin-bottom: 8px;
-            color: #e65100;
+            margin-left: 10px;
         }
 
-        .add-contact-form {
-            display: flex;
-            gap: 5px;
-        }
-
-        .add-contact-form input {
-            flex: 1;
-            padding: 8px;
-            border: 1px solid #ffb74d;
-            border-radius: 5px;
-            font-size: 12px;
-        }
-
-        .add-contact-form button {
-            padding: 8px 12px;
-            background: #ff9800;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 12px;
-        }
-
-        .conversations {
-            flex: 1;
-            overflow-y: auto;
-        }
-
-        .conversation {
-            padding: 15px 20px;
-            border-bottom: 1px solid #e0e0e0;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .conversation:hover {
-            background: #e8eaf6;
-        }
-
-        .conversation.active {
-            background: #e8eaf6;
-            border-left: 3px solid #667eea;
-        }
-
-        .conversation-name {
-            font-weight: 600;
-            margin-bottom: 5px;
-            color: #333;
-        }
-
-        .conversation-preview {
-            font-size: 13px;
-            color: #666;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .online-indicator {
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            background: #4caf50;
-            border-radius: 50%;
-            margin-right: 5px;
-        }
-
-        .chat-area {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .chat-header {
+        .config-panel {
+            background: #f8f9fa;
             padding: 20px;
-            background: white;
             border-bottom: 1px solid #e0e0e0;
-            display: flex;
-            align-items: center;
-            gap: 15px;
+            display: none;
         }
 
-        .chat-avatar {
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            font-size: 16px;
+        .config-panel.active {
+            display: block;
         }
 
-        .chat-info h3 {
-            font-size: 16px;
+        .config-panel h3 {
+            font-size: 14px;
             color: #333;
+            margin-bottom: 10px;
         }
 
-        .chat-status {
+        .config-panel input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 13px;
+        }
+
+        .config-status {
+            margin-top: 10px;
             font-size: 12px;
             color: #4caf50;
         }
@@ -290,6 +205,17 @@
             padding: 20px;
             overflow-y: auto;
             background: #fafafa;
+        }
+
+        .welcome-message {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+        }
+
+        .welcome-message h3 {
+            color: #667eea;
+            margin-bottom: 10px;
         }
 
         .message {
@@ -328,12 +254,14 @@
             flex-shrink: 0;
         }
 
-        .message.sent .message-avatar {
-            background: #764ba2;
+        .message.received .message-avatar {
+            background: white;
+            border: 2px solid #667eea;
+            font-size: 16px;
         }
 
         .message-content {
-            max-width: 65%;
+            max-width: 70%;
         }
 
         .message-bubble {
@@ -357,14 +285,50 @@
             padding: 0 5px;
         }
 
-        .n8n-indicator {
-            display: inline-block;
-            background: #4caf50;
-            color: white;
-            padding: 2px 6px;
-            border-radius: 3px;
-            font-size: 10px;
+        .typing-indicator {
+            display: none;
+            padding: 20px;
+            color: #999;
+            font-size: 13px;
+            font-style: italic;
+            text-align: center;
+        }
+
+        .typing-indicator.active {
+            display: block;
+        }
+
+        .typing-dots {
+            display: inline-flex;
+            gap: 4px;
             margin-left: 5px;
+        }
+
+        .typing-dots span {
+            width: 6px;
+            height: 6px;
+            background: #999;
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-dots span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dots span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+            0%, 60%, 100% {
+                transform: translateY(0);
+                opacity: 0.5;
+            }
+            30% {
+                transform: translateY(-10px);
+                opacity: 1;
+            }
         }
 
         .input-area {
@@ -403,47 +367,26 @@
             transform: scale(1.05);
         }
 
-        .empty-state {
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: #999;
-        }
-
-        .empty-state-icon {
-            font-size: 64px;
-            margin-bottom: 20px;
-        }
-
-        .typing-indicator {
-            display: none;
-            padding: 10px;
-            color: #999;
-            font-size: 13px;
-            font-style: italic;
-        }
-
-        .typing-indicator.active {
-            display: block;
+        .send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
         }
 
         @media (max-width: 768px) {
-            .sidebar {
+            .container {
                 width: 100%;
+                height: 100vh;
+                border-radius: 0;
             }
-            
-            .chat-area {
-                display: none;
+
+            .bot-info h2 {
+                font-size: 16px;
             }
-            
-            .chat-area.active {
-                display: flex;
-            }
-            
-            .sidebar.hidden {
-                display: none;
+
+            .config-btn, .logout-btn {
+                font-size: 11px;
+                padding: 6px 12px;
             }
         }
     </style>
@@ -451,7 +394,8 @@
 <body>
     <!-- Écran de connexion -->
     <div class="login-container" id="loginContainer">
-        <h1>💬 Messagerie N8N</h1>
+        <h1>🤖 Chatbot N8N</h1>
+        <p>Discutez avec notre assistant intelligent</p>
         <div class="input-group">
             <label>Nom d'utilisateur</label>
             <input type="text" id="usernameInput" placeholder="Entrez votre pseudo">
@@ -464,98 +408,91 @@
         <button class="btn btn-secondary" onclick="register()">Créer un compte</button>
     </div>
 
-    <!-- Application principale -->
+    <!-- Application chatbot -->
     <div class="container" id="mainContainer">
-        <div class="sidebar">
-            <div class="sidebar-header">
-                <h2>Messagerie N8N</h2>
-                <div class="user-info">
-                    <span class="user-name" id="currentUser"></span>
-                    <button class="logout-btn" onclick="logout()">Déconnexion</button>
+        <div class="chat-header">
+            <div class="header-left">
+                <div class="bot-avatar">🤖</div>
+                <div class="bot-info">
+                    <h2>Assistant N8N</h2>
+                    <div class="bot-status">✅ En ligne</div>
                 </div>
             </div>
-
-            <div class="n8n-config">
-                <h3>🔗 Configuration N8N</h3>
-                <input type="text" id="n8nWebhook" placeholder="URL du webhook N8N" 
-                       value="https://votre-instance.n8n.cloud/webhook/messagerie">
-                <div class="n8n-status">✅ Webhook configuré - Les messages seront envoyés à N8N</div>
+            <div>
+                <button class="config-btn" onclick="toggleConfig()">⚙️ Config</button>
+                <button class="logout-btn" onclick="logout()">Déconnexion</button>
             </div>
-
-            <div class="add-contact-section">
-                <h3>➕ Ajouter un contact</h3>
-                <div class="add-contact-form">
-                    <input type="text" id="newContactInput" placeholder="Nom du contact">
-                    <button onclick="addContact()">Ajouter</button>
-                </div>
-            </div>
-
-            <div class="conversations" id="conversations"></div>
         </div>
 
-        <div class="chat-area" id="chatArea">
-            <div class="empty-state">
-                <div class="empty-state-icon">💬</div>
-                <h3>Sélectionnez une conversation</h3>
-                <p>Choisissez un contact pour commencer à discuter</p>
+        <div class="config-panel" id="configPanel">
+            <h3>🔗 Configuration du Webhook N8N</h3>
+            <input type="text" id="n8nWebhook" placeholder="URL du webhook N8N" 
+                   value="https://votre-instance.n8n.cloud/webhook/chatbot">
+            <div class="config-status">💡 Entrez l'URL de votre webhook N8N pour connecter le bot</div>
+        </div>
+
+        <div class="messages" id="messages">
+            <div class="welcome-message">
+                <h3>👋 Bienvenue !</h3>
+                <p>Je suis votre assistant virtuel. Posez-moi vos questions !</p>
             </div>
+        </div>
+
+        <div class="typing-indicator" id="typingIndicator">
+            Le bot réfléchit
+            <span class="typing-dots">
+                <span></span>
+                <span></span>
+                <span></span>
+            </span>
+        </div>
+
+        <div class="input-area">
+            <input type="text" id="messageInput" placeholder="Tapez votre message..." 
+                   onkeypress="if(event.key==='Enter') sendMessage()">
+            <button class="send-btn" id="sendBtn" onclick="sendMessage()">Envoyer</button>
         </div>
     </div>
 
     <script>
         let currentUser = null;
-        let currentChat = null;
-        let users = {};
-        let contacts = {};
-        let conversations = {};
+        let messages = [];
 
-        // Charger les données depuis localStorage
+        // Charger les données
         function loadData() {
             try {
                 // Charger les utilisateurs
-                const usersData = localStorage.getItem('n8n_users');
-                users = usersData ? JSON.parse(usersData) : {};
+                const usersData = localStorage.getItem('chatbot_users');
+                const users = usersData ? JSON.parse(usersData) : {};
 
-                // Charger les contacts et conversations si connecté
+                // Charger l'historique des messages si connecté
                 if (currentUser) {
-                    const contactsData = localStorage.getItem(`n8n_contacts_${currentUser}`);
-                    contacts = contactsData ? JSON.parse(contactsData) : {};
-
-                    const convsData = localStorage.getItem(`n8n_conversations_${currentUser}`);
-                    conversations = convsData ? JSON.parse(convsData) : {};
+                    const messagesData = localStorage.getItem(`chatbot_messages_${currentUser}`);
+                    messages = messagesData ? JSON.parse(messagesData) : [];
                 }
+
+                return users;
             } catch (error) {
-                console.error('Erreur lors du chargement des données:', error);
-                users = {};
-                contacts = {};
-                conversations = {};
+                console.error('Erreur lors du chargement:', error);
+                return {};
             }
         }
 
         // Sauvegarder les utilisateurs
-        function saveUsers() {
+        function saveUsers(users) {
             try {
-                localStorage.setItem('n8n_users', JSON.stringify(users));
+                localStorage.setItem('chatbot_users', JSON.stringify(users));
             } catch (error) {
-                console.error('Erreur lors de la sauvegarde des utilisateurs:', error);
+                console.error('Erreur lors de la sauvegarde:', error);
             }
         }
 
-        // Sauvegarder les contacts
-        function saveContacts() {
+        // Sauvegarder les messages
+        function saveMessages() {
             try {
-                localStorage.setItem(`n8n_contacts_${currentUser}`, JSON.stringify(contacts));
+                localStorage.setItem(`chatbot_messages_${currentUser}`, JSON.stringify(messages));
             } catch (error) {
-                console.error('Erreur lors de la sauvegarde des contacts:', error);
-            }
-        }
-
-        // Sauvegarder les conversations
-        function saveConversations() {
-            try {
-                localStorage.setItem(`n8n_conversations_${currentUser}`, JSON.stringify(conversations));
-            } catch (error) {
-                console.error('Erreur lors de la sauvegarde des conversations:', error);
+                console.error('Erreur lors de la sauvegarde:', error);
             }
         }
 
@@ -569,7 +506,7 @@
                 return;
             }
 
-            loadData();
+            const users = loadData();
 
             if (users[username]) {
                 alert('Ce nom d\'utilisateur existe déjà');
@@ -581,7 +518,7 @@
                 createdAt: new Date().toISOString() 
             };
             
-            saveUsers();
+            saveUsers(users);
 
             alert('Compte créé avec succès ! Vous pouvez maintenant vous connecter.');
             document.getElementById('usernameInput').value = '';
@@ -598,7 +535,7 @@
                 return;
             }
 
-            loadData();
+            const users = loadData();
 
             if (!users[username]) {
                 alert('Utilisateur inconnu. Créez d\'abord un compte.');
@@ -615,112 +552,37 @@
 
             document.getElementById('loginContainer').style.display = 'none';
             document.getElementById('mainContainer').classList.add('active');
-            document.getElementById('currentUser').textContent = currentUser;
 
-            renderConversations();
+            renderMessages();
         }
 
         // Déconnexion
         function logout() {
             currentUser = null;
-            currentChat = null;
+            messages = [];
             document.getElementById('loginContainer').style.display = 'block';
             document.getElementById('mainContainer').classList.remove('active');
             document.getElementById('usernameInput').value = '';
             document.getElementById('passwordInput').value = '';
         }
 
-        // Ajouter un contact
-        function addContact() {
-            const contactName = document.getElementById('newContactInput').value.trim();
-
-            if (!contactName) {
-                alert('Entrez un nom de contact');
-                return;
-            }
-
-            if (contacts[contactName]) {
-                alert('Ce contact existe déjà');
-                return;
-            }
-
-            contacts[contactName] = {
-                name: contactName,
-                avatar: contactName.substring(0, 2).toUpperCase(),
-                addedAt: new Date().toISOString()
-            };
-
-            conversations[contactName] = [];
-
-            saveContacts();
-            saveConversations();
-
-            document.getElementById('newContactInput').value = '';
-            renderConversations();
-        }
-
-        // Afficher les conversations
-        function renderConversations() {
-            const container = document.getElementById('conversations');
-            const contactList = Object.values(contacts);
-
-            if (contactList.length === 0) {
-                container.innerHTML = '<div style="padding: 20px; text-align: center; color: #999;">Aucun contact. Ajoutez-en un !</div>';
-                return;
-            }
-
-            container.innerHTML = contactList.map(contact => {
-                const messages = conversations[contact.name] || [];
-                const lastMsg = messages.length > 0 ? messages[messages.length - 1].text : 'Nouvelle conversation';
-
-                return `
-                    <div class="conversation ${currentChat === contact.name ? 'active' : ''}" 
-                         onclick="openChat('${contact.name}')">
-                        <div class="conversation-name">
-                            <span class="online-indicator"></span>
-                            ${contact.name}
-                        </div>
-                        <div class="conversation-preview">${lastMsg}</div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        // Ouvrir une conversation
-        function openChat(contactName) {
-            currentChat = contactName;
-            const contact = contacts[contactName];
-            const chatArea = document.getElementById('chatArea');
-
-            chatArea.innerHTML = `
-                <div class="chat-header">
-                    <div class="chat-avatar">${contact.avatar}</div>
-                    <div class="chat-info">
-                        <h3>${contact.name} <span class="n8n-indicator">N8N</span></h3>
-                        <div class="chat-status">En ligne</div>
-                    </div>
-                </div>
-                <div class="messages" id="messages"></div>
-                <div class="typing-indicator" id="typingIndicator">⌨️ N8N traite votre message...</div>
-                <div class="input-area">
-                    <input type="text" id="messageInput" placeholder="Écrivez votre message..." 
-                           onkeypress="if(event.key==='Enter') sendMessage()">
-                    <button class="send-btn" onclick="sendMessage()">Envoyer</button>
-                </div>
-            `;
-
-            renderMessages();
-            renderConversations();
-            document.getElementById('messageInput').focus();
+        // Toggle configuration
+        function toggleConfig() {
+            const panel = document.getElementById('configPanel');
+            panel.classList.toggle('active');
         }
 
         // Afficher les messages
         function renderMessages() {
             const container = document.getElementById('messages');
-            const messages = conversations[currentChat] || [];
 
             if (messages.length === 0) {
-                container.innerHTML = '<div style="text-align: center; color: #999; padding: 20px;">Aucun message. Commencez la conversation !</div>';
+                container.innerHTML = `
+                    <div class="welcome-message">
+                        <h3>👋 Bienvenue ${currentUser} !</h3>
+                        <p>Je suis votre assistant virtuel. Posez-moi vos questions !</p>
+                    </div>
+                `;
                 return;
             }
 
@@ -738,11 +600,11 @@
         }
 
         // Envoyer à N8N
-        async function sendToN8N(message, contact) {
+        async function sendToN8N(message) {
             const webhookUrl = document.getElementById('n8nWebhook').value;
 
             if (!webhookUrl || webhookUrl.includes('votre-instance')) {
-                console.log('Webhook N8N non configuré - simulation locale');
+                console.log('Webhook N8N non configuré - réponse automatique');
                 return null;
             }
 
@@ -752,7 +614,6 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         user: currentUser,
-                        contact: contact,
                         message: message,
                         timestamp: new Date().toISOString()
                     })
@@ -771,14 +632,18 @@
             const input = document.getElementById('messageInput');
             const text = input.value.trim();
 
-            if (!text || !currentChat) return;
+            if (!text) return;
 
             const now = new Date();
             const time = now.getHours().toString().padStart(2, '0') + ':' + 
                        now.getMinutes().toString().padStart(2, '0');
 
+            // Désactiver l'input pendant l'envoi
+            input.disabled = true;
+            document.getElementById('sendBtn').disabled = true;
+
             // Ajouter le message de l'utilisateur
-            conversations[currentChat].push({
+            messages.push({
                 text: text,
                 sent: true,
                 avatar: currentUser.substring(0, 2).toUpperCase(),
@@ -786,53 +651,72 @@
             });
 
             input.value = '';
-            saveConversations();
+            saveMessages();
             renderMessages();
-            renderConversations();
 
             // Afficher l'indicateur de saisie
             document.getElementById('typingIndicator').classList.add('active');
 
             // Envoyer à N8N
-            const n8nResponse = await sendToN8N(text, currentChat);
+            const botResponse = await sendToN8N(text);
 
             setTimeout(() => {
                 document.getElementById('typingIndicator').classList.remove('active');
 
-                const contact = contacts[currentChat];
-                const responseText = n8nResponse || getAutoResponse(text);
+                const responseText = botResponse || getAutoResponse(text);
 
-                conversations[currentChat].push({
+                messages.push({
                     text: responseText,
                     sent: false,
-                    avatar: contact.avatar,
+                    avatar: '🤖',
                     time: new Date().getHours().toString().padStart(2, '0') + ':' + 
                           new Date().getMinutes().toString().padStart(2, '0')
                 });
 
-                saveConversations();
+                saveMessages();
                 renderMessages();
-                renderConversations();
+
+                // Réactiver l'input
+                input.disabled = false;
+                document.getElementById('sendBtn').disabled = false;
+                input.focus();
             }, 1500);
         }
 
         // Réponse automatique (si N8N non configuré)
         function getAutoResponse(message) {
+            const lowerMsg = message.toLowerCase();
+            
+            if (lowerMsg.includes('bonjour') || lowerMsg.includes('salut') || lowerMsg.includes('hello')) {
+                return 'Bonjour ! Comment puis-je vous aider aujourd\'hui ? 😊';
+            }
+            
+            if (lowerMsg.includes('comment') && lowerMsg.includes('vas')) {
+                return 'Je vais très bien, merci ! Et vous ? En quoi puis-je vous être utile ?';
+            }
+            
+            if (lowerMsg.includes('merci')) {
+                return 'De rien ! N\'hésitez pas si vous avez d\'autres questions. 😊';
+            }
+            
+            if (lowerMsg.includes('au revoir') || lowerMsg.includes('bye')) {
+                return 'Au revoir ! À bientôt ! 👋';
+            }
+            
             const responses = [
-                'Message bien reçu ! 👍',
-                'Merci pour votre message, je vais traiter ça.',
-                'C\'est noté ! Je reviens vers vous rapidement.',
-                'Parfait, je m\'en occupe tout de suite.',
-                'Compris ! Je prends en compte votre demande.',
-                'Super, merci de l\'info ! 🎉'
+                'C\'est une très bonne question ! Pour obtenir une réponse personnalisée, configurez le webhook N8N.',
+                'Intéressant ! Configurez votre webhook N8N pour que je puisse vous répondre de manière plus précise.',
+                'Je comprends votre demande. Pour des réponses optimales, pensez à configurer l\'intégration N8N !',
+                'Merci pour votre message ! Pour une assistance complète, connectez-moi à N8N via le panneau de configuration.'
             ];
+            
             return responses[Math.floor(Math.random() * responses.length)];
         }
 
         // Initialisation
         (function init() {
             loadData();
-            console.log('Messagerie N8N initialisée avec localStorage');
+            console.log('Chatbot N8N initialisé');
         })();
     </script>
 </body>
