@@ -511,22 +511,32 @@
 
         // Charger les données
         async function loadData() {
+            // Charger les utilisateurs
             try {
                 const usersData = await window.storage.get('users', true);
-                users = usersData ? JSON.parse(usersData.value) : {};
-
-                if (currentUser) {
-                    const contactsData = await window.storage.get(`contacts_${currentUser}`, false);
-                    contacts = contactsData ? JSON.parse(contactsData.value) : {};
-
-                    const convsData = await window.storage.get(`conversations_${currentUser}`, false);
-                    conversations = convsData ? JSON.parse(convsData.value) : {};
-                }
+                users = JSON.parse(usersData.value);
             } catch (error) {
-                console.log('Initialisation des données');
+                console.log('Aucun utilisateur existant, initialisation');
                 users = {};
-                contacts = {};
-                conversations = {};
+            }
+
+            // Charger les contacts et conversations si connecté
+            if (currentUser) {
+                try {
+                    const contactsData = await window.storage.get(`contacts_${currentUser}`, false);
+                    contacts = JSON.parse(contactsData.value);
+                } catch (error) {
+                    console.log('Aucun contact existant');
+                    contacts = {};
+                }
+
+                try {
+                    const convsData = await window.storage.get(`conversations_${currentUser}`, false);
+                    conversations = JSON.parse(convsData.value);
+                } catch (error) {
+                    console.log('Aucune conversation existante');
+                    conversations = {};
+                }
             }
         }
 
