@@ -14,177 +14,34 @@
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
+            height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 20px;
         }
 
-        .container {
+        .chat-container {
             width: 90%;
             max-width: 500px;
+            height: 600px;
             background: white;
             border-radius: 20px;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-            overflow: hidden;
-        }
-
-        /* Auth Styles */
-        .auth-container {
-            padding: 40px;
-        }
-
-        .auth-header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .auth-header h1 {
-            color: #333;
-            font-size: 28px;
-            margin-bottom: 10px;
-        }
-
-        .auth-header p {
-            color: #666;
-            font-size: 14px;
-        }
-
-        .auth-tabs {
             display: flex;
-            margin-bottom: 30px;
-            border-bottom: 2px solid #f0f0f0;
-        }
-
-        .auth-tab {
-            flex: 1;
-            padding: 15px;
-            text-align: center;
-            cursor: pointer;
-            color: #666;
-            font-weight: 600;
-            transition: all 0.3s;
-            border-bottom: 3px solid transparent;
-            margin-bottom: -2px;
-        }
-
-        .auth-tab.active {
-            color: #667eea;
-            border-bottom-color: #667eea;
-        }
-
-        .auth-form {
-            display: none;
-        }
-
-        .auth-form.active {
-            display: block;
-            animation: fadeIn 0.3s;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: #333;
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 12px 16px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            font-size: 14px;
-            outline: none;
-            transition: border-color 0.3s;
-        }
-
-        .form-group input:focus {
-            border-color: #667eea;
-        }
-
-        .btn-submit {
-            width: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 14px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 600;
-            transition: transform 0.2s, opacity 0.2s;
-        }
-
-        .btn-submit:hover {
-            transform: translateY(-2px);
-        }
-
-        .btn-submit:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: translateY(0);
-        }
-
-        .error-message {
-            background: #fee;
-            color: #c33;
-            padding: 10px;
-            border-radius: 8px;
-            font-size: 13px;
-            margin-bottom: 15px;
-            display: none;
-        }
-
-        .error-message.show {
-            display: block;
-        }
-
-        /* Chat Styles */
-        .chat-container {
-            height: 600px;
-            display: none;
             flex-direction: column;
-        }
-
-        .chat-container.active {
-            display: flex;
+            overflow: hidden;
         }
 
         .chat-header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             padding: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            text-align: center;
         }
 
         .chat-header h1 {
             font-size: 24px;
             font-weight: 600;
-        }
-
-        .btn-logout {
-            background: rgba(255, 255, 255, 0.2);
-            border: 1px solid white;
-            color: white;
-            padding: 8px 16px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: 600;
-            transition: background 0.3s;
-        }
-
-        .btn-logout:hover {
-            background: rgba(255, 255, 255, 0.3);
         }
 
         .chat-messages {
@@ -218,6 +75,7 @@
             padding: 12px 16px;
             border-radius: 18px;
             word-wrap: break-word;
+            white-space: pre-wrap;
         }
 
         .message.user .message-content {
@@ -315,205 +173,40 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Auth Container -->
-        <div class="auth-container" id="authContainer">
-            <div class="auth-header">
-                <h1>💬 Chatbot IA</h1>
-                <p>Connectez-vous pour commencer</p>
-            </div>
-
-            <div class="auth-tabs">
-                <div class="auth-tab active" data-tab="login">Connexion</div>
-                <div class="auth-tab" data-tab="register">Inscription</div>
-            </div>
-
-            <div class="error-message" id="errorMessage"></div>
-
-            <!-- Login Form -->
-            <form class="auth-form active" id="loginForm">
-                <div class="form-group">
-                    <label>Email</label>
-                    <input type="email" id="loginEmail" required placeholder="votre@email.com">
-                </div>
-                <div class="form-group">
-                    <label>Mot de passe</label>
-                    <input type="password" id="loginPassword" required placeholder="••••••••">
-                </div>
-                <button type="submit" class="btn-submit">Se connecter</button>
-            </form>
-
-            <!-- Register Form -->
-            <form class="auth-form" id="registerForm">
-                <div class="form-group">
-                    <label>Nom complet</label>
-                    <input type="text" id="registerName" required placeholder="Jean Dupont">
-                </div>
-                <div class="form-group">
-                    <label>Email</label>
-                    <input type="email" id="registerEmail" required placeholder="votre@email.com">
-                </div>
-                <div class="form-group">
-                    <label>Mot de passe</label>
-                    <input type="password" id="registerPassword" required placeholder="••••••••">
-                </div>
-                <div class="form-group">
-                    <label>Confirmer le mot de passe</label>
-                    <input type="password" id="registerConfirmPassword" required placeholder="••••••••">
-                </div>
-                <button type="submit" class="btn-submit">S'inscrire</button>
-            </form>
+    <div class="chat-container">
+        <div class="chat-header">
+            <h1>💬 Chatbot IA</h1>
         </div>
 
-        <!-- Chat Container -->
-        <div class="chat-container" id="chatContainer">
-            <div class="chat-header">
-                <h1>💬 Chatbot IA</h1>
-                <button class="btn-logout" id="logoutBtn">Déconnexion</button>
-            </div>
-
-            <div class="chat-messages" id="chatMessages">
-                <div class="message bot">
-                    <div class="message-content">
-                        Bonjour ! Je suis votre assistant IA. Comment puis-je vous aider aujourd'hui ?
-                    </div>
+        <div class="chat-messages" id="chatMessages">
+            <div class="message bot">
+                <div class="message-content">
+                    Bonjour ! Je suis votre assistant IA. Comment puis-je vous aider aujourd'hui ?
                 </div>
             </div>
+        </div>
 
-            <div class="chat-input-container">
-                <input type="text" id="userInput" placeholder="Tapez votre message...">
-                <button id="sendBtn">Envoyer</button>
-            </div>
+        <div class="chat-input-container">
+            <input type="text" id="userInput" placeholder="Tapez votre message...">
+            <button id="sendBtn">Envoyer</button>
         </div>
     </div>
 
     <script>
         // ========================================
-        // CONFIGURATION - MODIFIEZ ICI
+        // CONFIGURATION - MODIFIEZ UNIQUEMENT CETTE LIGNE
         // ========================================
-        const WEBHOOK_URL = 'https://n8n.prcz.fr/webhook/03b05e77-2e3f-4002-9677-cdec0cd99f38';
+        const WEBHOOK_URL = 'https://n8n.prcz.fr/webhook/messagerie-n8n';
         
-        // ========================================
-        // ÉTAT DE L'APPLICATION
-        // ========================================
-        let currentUser = null;
-        const users = {}; // Stockage simple des utilisateurs
-
         // ========================================
         // ÉLÉMENTS DOM
         // ========================================
-        const authContainer = document.getElementById('authContainer');
-        const chatContainer = document.getElementById('chatContainer');
-        const authTabs = document.querySelectorAll('.auth-tab');
-        const authForms = document.querySelectorAll('.auth-form');
-        const loginForm = document.getElementById('loginForm');
-        const registerForm = document.getElementById('registerForm');
-        const errorMessage = document.getElementById('errorMessage');
-        const logoutBtn = document.getElementById('logoutBtn');
         const chatMessages = document.getElementById('chatMessages');
         const userInput = document.getElementById('userInput');
         const sendBtn = document.getElementById('sendBtn');
 
         // ========================================
-        // GESTION DE L'AUTHENTIFICATION
-        // ========================================
-        authTabs.forEach(tab => {
-            tab.addEventListener('click', () => {
-                const tabName = tab.dataset.tab;
-                
-                authTabs.forEach(t => t.classList.remove('active'));
-                authForms.forEach(f => f.classList.remove('active'));
-                
-                tab.classList.add('active');
-                document.getElementById(`${tabName}Form`).classList.add('active');
-                hideError();
-            });
-        });
-
-        loginForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
-
-            if (!users[email]) {
-                showError('Compte introuvable. Veuillez vous inscrire.');
-                return;
-            }
-
-            if (users[email].password !== password) {
-                showError('Mot de passe incorrect.');
-                return;
-            }
-
-            currentUser = users[email];
-            showChat();
-        });
-
-        registerForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const name = document.getElementById('registerName').value;
-            const email = document.getElementById('registerEmail').value;
-            const password = document.getElementById('registerPassword').value;
-            const confirmPassword = document.getElementById('registerConfirmPassword').value;
-
-            if (password !== confirmPassword) {
-                showError('Les mots de passe ne correspondent pas.');
-                return;
-            }
-
-            if (password.length < 6) {
-                showError('Le mot de passe doit contenir au moins 6 caractères.');
-                return;
-            }
-
-            if (users[email]) {
-                showError('Un compte existe déjà avec cet email.');
-                return;
-            }
-
-            users[email] = { name, email, password };
-            currentUser = users[email];
-            showChat();
-        });
-
-        logoutBtn.addEventListener('click', () => {
-            currentUser = null;
-            chatContainer.classList.remove('active');
-            authContainer.style.display = 'block';
-            resetChat();
-        });
-
-        function showError(message) {
-            errorMessage.textContent = message;
-            errorMessage.classList.add('show');
-        }
-
-        function hideError() {
-            errorMessage.classList.remove('show');
-        }
-
-        function showChat() {
-            authContainer.style.display = 'none';
-            chatContainer.classList.add('active');
-            userInput.focus();
-            
-            // Message de bienvenue personnalisé
-            const welcomeMsg = document.createElement('div');
-            welcomeMsg.className = 'message bot';
-            welcomeMsg.innerHTML = `<div class="message-content">Bienvenue ${currentUser.name} ! 👋</div>`;
-            chatMessages.appendChild(welcomeMsg);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        }
-
-        function resetChat() {
-            const messages = chatMessages.querySelectorAll('.message');
-            messages.forEach((msg, index) => {
-                if (index > 0) msg.remove();
-            });
-        }
-
-        // ========================================
-        // GESTION DU CHAT
+        // GESTION DES MESSAGES
         // ========================================
         function addMessage(text, isUser) {
             const messageDiv = document.createElement('div');
@@ -547,6 +240,9 @@
             if (typing) typing.remove();
         }
 
+        // ========================================
+        // ENVOI DES MESSAGES
+        // ========================================
         async function sendMessage() {
             const message = userInput.value.trim();
             
@@ -565,8 +261,6 @@
                     },
                     body: JSON.stringify({
                         message: message,
-                        user: currentUser.name,
-                        email: currentUser.email,
                         timestamp: new Date().toISOString()
                     })
                 });
@@ -574,13 +268,14 @@
                 const data = await response.json();
                 removeTypingIndicator();
                 
-                const botResponse = data.response || data.message || data.output || 
+                // Récupère la réponse selon différents formats possibles
+                const botResponse = data.response || data.message || data.output || data.text ||
                                   'Désolé, je n\'ai pas pu traiter votre demande.';
                 
                 addMessage(botResponse, false);
             } catch (error) {
                 removeTypingIndicator();
-                addMessage('Erreur de connexion au serveur.', false);
+                addMessage('Erreur de connexion. Vérifiez votre URL webhook N8N.', false);
                 console.error('Erreur:', error);
             } finally {
                 sendBtn.disabled = false;
@@ -588,6 +283,9 @@
             }
         }
 
+        // ========================================
+        // ÉVÉNEMENTS
+        // ========================================
         sendBtn.addEventListener('click', sendMessage);
         
         userInput.addEventListener('keypress', (e) => {
@@ -595,6 +293,9 @@
                 sendMessage();
             }
         });
+
+        // Focus automatique sur l'input au chargement
+        userInput.focus();
     </script>
 </body>
 </html>
