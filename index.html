@@ -392,7 +392,6 @@
         // CONFIGURATION
         // ========================================
         const WEBHOOK_URL = 'https://n8n.prcz.fr/webhook/messagerie-n8n';
-        const ID_USER = 0
         
         // ========================================
         // ÉTAT DE L'APPLICATION
@@ -497,7 +496,7 @@
                     showError(data.message || 'Erreur lors de la création du compte');
                 }
             } catch (error) {
-                showError('Erreur de connexion au serveur');
+                showError('avez vous déjà créé un compte ?');
                 console.error('Erreur:', error);
             } finally {
                 registerBtn.disabled = false;
