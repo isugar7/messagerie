@@ -496,7 +496,7 @@
                     showError(data.message || 'Erreur lors de la création du compte');
                 }
             } catch (error) {
-                showError('avez vous déjà créé un compte ?');
+                showError('Erreur de connexion au serveur');
                 console.error('Erreur:', error);
             } finally {
                 registerBtn.disabled = false;
