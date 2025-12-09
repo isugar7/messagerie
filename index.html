@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chatbot N8N</title>
+    <title>Chatbot IA</title>
     <style>
         * {
             margin: 0;
@@ -14,324 +14,226 @@
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-        }
-
-        .login-container {
-            background: white;
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            width: 90%;
-            max-width: 400px;
-        }
-
-        .login-container h1 {
-            text-align: center;
-            color: #667eea;
-            margin-bottom: 10px;
-        }
-
-        .login-container p {
-            text-align: center;
-            color: #666;
-            margin-bottom: 30px;
-            font-size: 14px;
-        }
-
-        .input-group {
-            margin-bottom: 20px;
-        }
-
-        .input-group label {
-            display: block;
-            margin-bottom: 5px;
-            color: #333;
-            font-weight: 500;
-        }
-
-        .input-group input {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 14px;
-        }
-
-        .input-group input:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-
-        .btn {
-            width: 100%;
-            padding: 12px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 16px;
-            margin-top: 10px;
-            transition: all 0.3s;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn-secondary {
-            background: white;
-            color: #667eea;
-            border: 2px solid #667eea;
+            padding: 20px;
         }
 
         .container {
             width: 90%;
-            max-width: 900px;
-            height: 90vh;
+            max-width: 500px;
             background: white;
             border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            display: none;
-            flex-direction: column;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
             overflow: hidden;
         }
 
-        .container.active {
+        /* Auth Styles */
+        .auth-container {
+            padding: 40px;
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .auth-header h1 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .auth-header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .auth-tabs {
+            display: flex;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .auth-tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            color: #666;
+            font-weight: 600;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+        }
+
+        .auth-tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .auth-form {
+            display: none;
+        }
+
+        .auth-form.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            border-color: #667eea;
+        }
+
+        .btn-submit {
+            width: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: transform 0.2s, opacity 0.2s;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: translateY(0);
+        }
+
+        .error-message {
+            background: #fee;
+            color: #c33;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 13px;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        /* Chat Styles */
+        .chat-container {
+            height: 600px;
+            display: none;
+            flex-direction: column;
+        }
+
+        .chat-container.active {
             display: flex;
         }
 
         .chat-header {
-            padding: 20px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .bot-avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-        }
-
-        .bot-info h2 {
-            font-size: 18px;
-            margin-bottom: 3px;
-        }
-
-        .bot-status {
-            font-size: 12px;
-            opacity: 0.9;
-        }
-
-        .config-btn {
-            background: rgba(255,255,255,0.2);
-            border: 1px solid white;
-            color: white;
-            padding: 8px 16px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 13px;
-            transition: all 0.3s;
-        }
-
-        .config-btn:hover {
-            background: rgba(255,255,255,0.3);
-        }
-
-        .logout-btn {
-            background: rgba(255,255,255,0.2);
-            border: 1px solid white;
-            color: white;
-            padding: 8px 16px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 13px;
-            margin-left: 10px;
-        }
-
-        .config-panel {
-            background: #f8f9fa;
             padding: 20px;
-            border-bottom: 1px solid #e0e0e0;
-            display: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .config-panel.active {
-            display: block;
+        .chat-header h1 {
+            font-size: 24px;
+            font-weight: 600;
         }
 
-        .config-panel h3 {
-            font-size: 14px;
-            color: #333;
-            margin-bottom: 10px;
-        }
-
-        .config-panel input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #e0e0e0;
-            border-radius: 5px;
+        .btn-logout {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid white;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
             font-size: 13px;
+            font-weight: 600;
+            transition: background 0.3s;
         }
 
-        .config-status {
-            margin-top: 10px;
-            font-size: 12px;
-            color: #4caf50;
+        .btn-logout:hover {
+            background: rgba(255, 255, 255, 0.3);
         }
 
-        .messages {
+        .chat-messages {
             flex: 1;
             padding: 20px;
             overflow-y: auto;
-            background: #fafafa;
-        }
-
-        .welcome-message {
-            text-align: center;
-            padding: 40px 20px;
-            color: #666;
-        }
-
-        .welcome-message h3 {
-            color: #667eea;
-            margin-bottom: 10px;
+            background: #f5f5f5;
         }
 
         .message {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             display: flex;
-            gap: 12px;
-            animation: slideIn 0.3s ease;
+            animation: fadeIn 0.3s;
         }
 
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        .message.sent {
-            flex-direction: row-reverse;
+        .message.user {
+            justify-content: flex-end;
         }
 
-        .message-avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: #667eea;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 13px;
-            font-weight: bold;
-            flex-shrink: 0;
-        }
-
-        .message.received .message-avatar {
-            background: white;
-            border: 2px solid #667eea;
-            font-size: 16px;
+        .message.bot {
+            justify-content: flex-start;
         }
 
         .message-content {
             max-width: 70%;
-        }
-
-        .message-bubble {
             padding: 12px 16px;
             border-radius: 18px;
-            background: white;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.08);
             word-wrap: break-word;
-            line-height: 1.4;
         }
 
-        .message.sent .message-bubble {
+        .message.user .message-content {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
+            border-bottom-right-radius: 4px;
         }
 
-        .message-time {
-            font-size: 11px;
-            color: #999;
-            margin-top: 5px;
-            padding: 0 5px;
+        .message.bot .message-content {
+            background: white;
+            color: #333;
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
 
-        .typing-indicator {
-            display: none;
-            padding: 20px;
-            color: #999;
-            font-size: 13px;
-            font-style: italic;
-            text-align: center;
-        }
-
-        .typing-indicator.active {
-            display: block;
-        }
-
-        .typing-dots {
-            display: inline-flex;
-            gap: 4px;
-            margin-left: 5px;
-        }
-
-        .typing-dots span {
-            width: 6px;
-            height: 6px;
-            background: #999;
-            border-radius: 50%;
-            animation: typing 1.4s infinite;
-        }
-
-        .typing-dots span:nth-child(2) {
-            animation-delay: 0.2s;
-        }
-
-        .typing-dots span:nth-child(3) {
-            animation-delay: 0.4s;
-        }
-
-        @keyframes typing {
-            0%, 60%, 100% {
-                transform: translateY(0);
-                opacity: 0.5;
-            }
-            30% {
-                transform: translateY(-10px);
-                opacity: 1;
-            }
-        }
-
-        .input-area {
+        .chat-input-container {
             padding: 20px;
             background: white;
             border-top: 1px solid #e0e0e0;
@@ -339,341 +241,360 @@
             gap: 10px;
         }
 
-        .input-area input {
+        #userInput {
             flex: 1;
-            padding: 14px 20px;
-            border: 1px solid #e0e0e0;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
             border-radius: 25px;
             font-size: 14px;
             outline: none;
+            transition: border-color 0.3s;
         }
 
-        .input-area input:focus {
+        #userInput:focus {
             border-color: #667eea;
         }
 
-        .send-btn {
-            padding: 14px 30px;
+        #sendBtn {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
+            padding: 12px 24px;
             border-radius: 25px;
             cursor: pointer;
+            font-size: 14px;
             font-weight: 600;
-            transition: transform 0.2s;
+            transition: transform 0.2s, opacity 0.2s;
         }
 
-        .send-btn:hover {
+        #sendBtn:hover {
             transform: scale(1.05);
         }
 
-        .send-btn:disabled {
+        #sendBtn:disabled {
             opacity: 0.5;
             cursor: not-allowed;
-            transform: none;
+            transform: scale(1);
         }
 
-        @media (max-width: 768px) {
-            .container {
-                width: 100%;
-                height: 100vh;
-                border-radius: 0;
-            }
+        .typing-indicator {
+            display: none;
+            padding: 12px 16px;
+            background: white;
+            border-radius: 18px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            width: fit-content;
+        }
 
-            .bot-info h2 {
-                font-size: 16px;
-            }
+        .typing-indicator.active {
+            display: block;
+        }
 
-            .config-btn, .logout-btn {
-                font-size: 11px;
-                padding: 6px 12px;
-            }
+        .typing-indicator span {
+            height: 8px;
+            width: 8px;
+            background: #667eea;
+            border-radius: 50%;
+            display: inline-block;
+            margin: 0 2px;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-indicator span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-indicator span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-10px); }
         }
     </style>
 </head>
 <body>
-    <!-- Écran de connexion -->
-    <div class="login-container" id="loginContainer">
-        <h1>Francis saucisse IA</h1>
-        <p>Discutez avec notre assistant intelligent</p>
-        <div class="input-group">
-            <label>Nom d'utilisateur</label>
-            <input type="text" id="usernameInput" placeholder="Entrez votre pseudo">
-        </div>
-        <div class="input-group">
-            <label>Mot de passe</label>
-            <input type="password" id="passwordInput" placeholder="Entrez votre mot de passe">
-        </div>
-        <button class="btn" onclick="login()">Se connecter</button>
-        <button class="btn btn-secondary" onclick="register()">Créer un compte</button>
-    </div>
+    <div class="container">
+        <!-- Auth Container -->
+        <div class="auth-container" id="authContainer">
+            <div class="auth-header">
+                <h1>💬 Chatbot IA</h1>
+                <p>Connectez-vous pour commencer</p>
+            </div>
 
-    <!-- Application chatbot -->
-    <div class="container" id="mainContainer">
-        <div class="chat-header">
-            <div class="header-left">
-                <div class="bot-avatar">🤖</div>
-                <div class="bot-info">
-                    <h2>Assistant N8N</h2>
-                    <div class="bot-status">✅ En ligne</div>
+            <div class="auth-tabs">
+                <div class="auth-tab active" data-tab="login">Connexion</div>
+                <div class="auth-tab" data-tab="register">Inscription</div>
+            </div>
+
+            <div class="error-message" id="errorMessage"></div>
+
+            <!-- Login Form -->
+            <form class="auth-form active" id="loginForm">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="loginEmail" required placeholder="votre@email.com">
+                </div>
+                <div class="form-group">
+                    <label>Mot de passe</label>
+                    <input type="password" id="loginPassword" required placeholder="••••••••">
+                </div>
+                <button type="submit" class="btn-submit">Se connecter</button>
+            </form>
+
+            <!-- Register Form -->
+            <form class="auth-form" id="registerForm">
+                <div class="form-group">
+                    <label>Nom complet</label>
+                    <input type="text" id="registerName" required placeholder="Jean Dupont">
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="registerEmail" required placeholder="votre@email.com">
+                </div>
+                <div class="form-group">
+                    <label>Mot de passe</label>
+                    <input type="password" id="registerPassword" required placeholder="••••••••">
+                </div>
+                <div class="form-group">
+                    <label>Confirmer le mot de passe</label>
+                    <input type="password" id="registerConfirmPassword" required placeholder="••••••••">
+                </div>
+                <button type="submit" class="btn-submit">S'inscrire</button>
+            </form>
+        </div>
+
+        <!-- Chat Container -->
+        <div class="chat-container" id="chatContainer">
+            <div class="chat-header">
+                <h1>💬 Chatbot IA</h1>
+                <button class="btn-logout" id="logoutBtn">Déconnexion</button>
+            </div>
+
+            <div class="chat-messages" id="chatMessages">
+                <div class="message bot">
+                    <div class="message-content">
+                        Bonjour ! Je suis votre assistant IA. Comment puis-je vous aider aujourd'hui ?
+                    </div>
                 </div>
             </div>
-            <div>
-                <button class="logout-btn" onclick="logout()">Déconnexion</button>
+
+            <div class="chat-input-container">
+                <input type="text" id="userInput" placeholder="Tapez votre message...">
+                <button id="sendBtn">Envoyer</button>
             </div>
-        </div>
-
-       
-
-        <div class="messages" id="messages">
-            <div class="welcome-message">
-                <h3>👋 Bienvenue !</h3>
-                <p>Je suis votre assistant virtuel. Posez-moi vos questions !</p>
-            </div>
-        </div>
-
-        <div class="typing-indicator" id="typingIndicator">
-            Le bot réfléchit
-            <span class="typing-dots">
-                <span></span>
-                <span></span>
-                <span></span>
-            </span>
-        </div>
-
-        <div class="input-area">
-            <input type="text" id="messageInput" placeholder="Tapez votre message..." 
-                   onkeypress="if(event.key==='Enter') sendMessage()">
-            <button class="send-btn" id="sendBtn" onclick="sendMessage()">Envoyer</button>
         </div>
     </div>
 
     <script>
+        // ========================================
+        // CONFIGURATION - MODIFIEZ ICI
+        // ========================================
+        const WEBHOOK_URL = 'https://votre-instance.app.n8n.cloud/webhook/votre-webhook-id';
+        
+        // ========================================
+        // ÉTAT DE L'APPLICATION
+        // ========================================
         let currentUser = null;
-        let messages = [];
+        const users = {}; // Stockage simple des utilisateurs
 
-        // Charger les données
-        function loadData() {
-            try {
-                // Charger les utilisateurs
-                const usersData = localStorage.getItem('chatbot_users');
-                const users = usersData ? JSON.parse(usersData) : {};
+        // ========================================
+        // ÉLÉMENTS DOM
+        // ========================================
+        const authContainer = document.getElementById('authContainer');
+        const chatContainer = document.getElementById('chatContainer');
+        const authTabs = document.querySelectorAll('.auth-tab');
+        const authForms = document.querySelectorAll('.auth-form');
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+        const errorMessage = document.getElementById('errorMessage');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const chatMessages = document.getElementById('chatMessages');
+        const userInput = document.getElementById('userInput');
+        const sendBtn = document.getElementById('sendBtn');
 
-                // Charger l'historique des messages si connecté
-                if (currentUser) {
-                    const messagesData = localStorage.getItem(`chatbot_messages_${currentUser}`);
-                    messages = messagesData ? JSON.parse(messagesData) : [];
-                }
-
-                return users;
-            } catch (error) {
-                console.error('Erreur lors du chargement:', error);
-                return {};
-            }
-        }
-
-        // Sauvegarder les utilisateurs
-        function saveUsers(users) {
-            try {
-                localStorage.setItem('chatbot_users', JSON.stringify(users));
-            } catch (error) {
-                console.error('Erreur lors de la sauvegarde:', error);
-            }
-        }
-
-        // Sauvegarder les messages
-        function saveMessages() {
-            try {
-                localStorage.setItem(`chatbot_messages_${currentUser}`, JSON.stringify(messages));
-            } catch (error) {
-                console.error('Erreur lors de la sauvegarde:', error);
-            }
-        }
-
-        // Inscription
-        function register() {
-            const username = document.getElementById('usernameInput').value.trim();
-            const password = document.getElementById('passwordInput').value.trim();
-
-            if (!username || !password) {
-                alert('Veuillez remplir tous les champs');
-                return;
-            }
-
-            const users = loadData();
-
-            if (users[username]) {
-                alert('Ce nom d\'utilisateur existe déjà');
-                return;
-            }
-
-            users[username] = { 
-                password: password, 
-                createdAt: new Date().toISOString() 
-            };
-            
-            saveUsers(users);
-
-            alert('Compte créé avec succès ! Vous pouvez maintenant vous connecter.');
-            document.getElementById('usernameInput').value = '';
-            document.getElementById('passwordInput').value = '';
-        }
-
-        // Connexion
-        function login() {
-            const username = document.getElementById('usernameInput').value.trim();
-            const password = document.getElementById('passwordInput').value.trim();
-
-            if (!username || !password) {
-                alert('Veuillez remplir tous les champs');
-                return;
-            }
-
-            const users = loadData();
-
-            if (!users[username]) {
-                alert('Utilisateur inconnu. Créez d\'abord un compte.');
-                return;
-            }
-
-            if (users[username].password !== password) {
-                alert('Mot de passe incorrect');
-                return;
-            }
-
-            currentUser = username;
-            loadData();
-
-            document.getElementById('loginContainer').style.display = 'none';
-            document.getElementById('mainContainer').classList.add('active');
-
-            renderMessages();
-        }
-
-        // Déconnexion
-        function logout() {
-            currentUser = null;
-            messages = [];
-            document.getElementById('loginContainer').style.display = 'block';
-            document.getElementById('mainContainer').classList.remove('active');
-            document.getElementById('usernameInput').value = '';
-            document.getElementById('passwordInput').value = '';
-        }
-
-
-        // Afficher les messages
-        function renderMessages() {
-            const container = document.getElementById('messages');
-
-            if (messages.length === 0) {
-                container.innerHTML = `
-                    <div class="welcome-message">
-                        <h3>👋 Bienvenue ${currentUser} !</h3>
-                        <p>Je suis votre assistant virtuel. Posez-moi vos questions !</p>
-                    </div>
-                `;
-                return;
-            }
-
-            container.innerHTML = messages.map(msg => `
-                <div class="message ${msg.sent ? 'sent' : 'received'}">
-                    <div class="message-avatar">${msg.avatar}</div>
-                    <div class="message-content">
-                        <div class="message-bubble">${msg.text}</div>
-                        <div class="message-time">${msg.time}</div>
-                    </div>
-                </div>
-            `).join('');
-
-            container.scrollTop = container.scrollHeight;
-        }
-
-        // Envoyer à N8N
-        async function sendToN8N(message) {
-    const webhookUrl = 'https://n8n.prcz.fr/webhook/03b05e77-2e3f-4002-9677-cdec0cd99f38'; // <- URL fixe et non modifiable
-
-    try {
-        const response = await fetch(webhookUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                user: currentUser,
-                message: message,
-                timestamp: new Date().toISOString()
-            })
+        // ========================================
+        // GESTION DE L'AUTHENTIFICATION
+        // ========================================
+        authTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabName = tab.dataset.tab;
+                
+                authTabs.forEach(t => t.classList.remove('active'));
+                authForms.forEach(f => f.classList.remove('active'));
+                
+                tab.classList.add('active');
+                document.getElementById(`${tabName}Form`).classList.add('active');
+                hideError();
+            });
         });
 
-        const data = await response.json();
-        return data.response || null;
-    } catch (error) {
-        console.error('Erreur N8N:', error);
-        return null;
-    }
-}
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
 
+            if (!users[email]) {
+                showError('Compte introuvable. Veuillez vous inscrire.');
+                return;
+            }
 
-        // Envoyer un message
-        async function sendMessage() {
-            const input = document.getElementById('messageInput');
-            const text = input.value.trim();
+            if (users[email].password !== password) {
+                showError('Mot de passe incorrect.');
+                return;
+            }
 
-            if (!text) return;
+            currentUser = users[email];
+            showChat();
+        });
 
-            const now = new Date();
-            const time = now.getHours().toString().padStart(2, '0') + ':' + 
-                       now.getMinutes().toString().padStart(2, '0');
+        registerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('registerName').value;
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            const confirmPassword = document.getElementById('registerConfirmPassword').value;
 
-            // Désactiver l'input pendant l'envoi
-            input.disabled = true;
-            document.getElementById('sendBtn').disabled = true;
+            if (password !== confirmPassword) {
+                showError('Les mots de passe ne correspondent pas.');
+                return;
+            }
 
-            // Ajouter le message de l'utilisateur
-            messages.push({
-                text: text,
-                sent: true,
-                avatar: currentUser.substring(0, 2).toUpperCase(),
-                time: time
-            });
+            if (password.length < 6) {
+                showError('Le mot de passe doit contenir au moins 6 caractères.');
+                return;
+            }
 
-            input.value = '';
-            saveMessages();
-            renderMessages();
+            if (users[email]) {
+                showError('Un compte existe déjà avec cet email.');
+                return;
+            }
 
-            // Afficher l'indicateur de saisie
-            document.getElementById('typingIndicator').classList.add('active');
+            users[email] = { name, email, password };
+            currentUser = users[email];
+            showChat();
+        });
 
-            // Envoyer à N8N
-            const botResponse = await sendToN8N(text);
+        logoutBtn.addEventListener('click', () => {
+            currentUser = null;
+            chatContainer.classList.remove('active');
+            authContainer.style.display = 'block';
+            resetChat();
+        });
 
-            setTimeout(() => {
-                document.getElementById('typingIndicator').classList.remove('active');
-
-                const responseText = botResponse || getAutoResponse(text);
-
-                messages.push({
-                    text: responseText,
-                    sent: false,
-                    avatar: '🤖',
-                    time: new Date().getHours().toString().padStart(2, '0') + ':' + 
-                          new Date().getMinutes().toString().padStart(2, '0')
-                });
-
-                saveMessages();
-                renderMessages();
-
-                // Réactiver l'input
-                input.disabled = false;
-                document.getElementById('sendBtn').disabled = false;
-                input.focus();
-            }, 1500);
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.classList.add('show');
         }
 
+        function hideError() {
+            errorMessage.classList.remove('show');
+        }
 
-        // Initialisation
-        (function init() {
-            loadData();
-            console.log('Chatbot N8N initialisé');
-        })();
+        function showChat() {
+            authContainer.style.display = 'none';
+            chatContainer.classList.add('active');
+            userInput.focus();
+            
+            // Message de bienvenue personnalisé
+            const welcomeMsg = document.createElement('div');
+            welcomeMsg.className = 'message bot';
+            welcomeMsg.innerHTML = `<div class="message-content">Bienvenue ${currentUser.name} ! 👋</div>`;
+            chatMessages.appendChild(welcomeMsg);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function resetChat() {
+            const messages = chatMessages.querySelectorAll('.message');
+            messages.forEach((msg, index) => {
+                if (index > 0) msg.remove();
+            });
+        }
+
+        // ========================================
+        // GESTION DU CHAT
+        // ========================================
+        function addMessage(text, isUser) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user' : 'bot'}`;
+            
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content';
+            contentDiv.textContent = text;
+            
+            messageDiv.appendChild(contentDiv);
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function showTypingIndicator() {
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'message bot';
+            typingDiv.id = 'typing-indicator';
+            
+            const indicator = document.createElement('div');
+            indicator.className = 'typing-indicator active';
+            indicator.innerHTML = '<span></span><span></span><span></span>';
+            
+            typingDiv.appendChild(indicator);
+            chatMessages.appendChild(typingDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function removeTypingIndicator() {
+            const typing = document.getElementById('typing-indicator');
+            if (typing) typing.remove();
+        }
+
+        async function sendMessage() {
+            const message = userInput.value.trim();
+            
+            if (!message) return;
+
+            addMessage(message, true);
+            userInput.value = '';
+            sendBtn.disabled = true;
+            showTypingIndicator();
+
+            try {
+                const response = await fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        message: message,
+                        user: currentUser.name,
+                        email: currentUser.email,
+                        timestamp: new Date().toISOString()
+                    })
+                });
+
+                const data = await response.json();
+                removeTypingIndicator();
+                
+                const botResponse = data.response || data.message || data.output || 
+                                  'Désolé, je n\'ai pas pu traiter votre demande.';
+                
+                addMessage(botResponse, false);
+            } catch (error) {
+                removeTypingIndicator();
+                addMessage('Erreur de connexion au serveur.', false);
+                console.error('Erreur:', error);
+            } finally {
+                sendBtn.disabled = false;
+                userInput.focus();
+            }
+        }
+
+        sendBtn.addEventListener('click', sendMessage);
+        
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
     </script>
 </body>
 </html>
