@@ -14,34 +14,176 @@
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
+            padding: 20px;
         }
 
-        .chat-container {
+        .container {
             width: 90%;
             max-width: 500px;
-            height: 600px;
             background: white;
             border-radius: 20px;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-            display: flex;
-            flex-direction: column;
             overflow: hidden;
         }
 
-        .chat-header {
+        .header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             padding: 20px;
             text-align: center;
         }
 
-        .chat-header h1 {
+        .header h1 {
             font-size: 24px;
             font-weight: 600;
+        }
+
+        /* AUTH SCREEN */
+        .auth-container {
+            padding: 40px 30px;
+        }
+
+        .auth-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .auth-tab {
+            flex: 1;
+            padding: 12px;
+            background: #f5f5f5;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .auth-tab.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .auth-form {
+            display: none;
+        }
+
+        .auth-form.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            border-color: #667eea;
+        }
+
+        .auth-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: transform 0.2s;
+        }
+
+        .auth-btn:hover {
+            transform: scale(1.02);
+        }
+
+        .auth-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: scale(1);
+        }
+
+        .error-message {
+            background: #fee;
+            color: #c33;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .success-message {
+            background: #efe;
+            color: #3c3;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        /* CHAT SCREEN */
+        .chat-container {
+            display: none;
+            height: 600px;
+            flex-direction: column;
+        }
+
+        .chat-container.active {
+            display: flex;
+        }
+
+        .chat-user-info {
+            background: #f5f5f5;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .logout-btn {
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            text-decoration: underline;
+            font-size: 14px;
         }
 
         .chat-messages {
@@ -122,7 +264,7 @@
             cursor: pointer;
             font-size: 14px;
             font-weight: 600;
-            transition: transform 0.2s, opacity 0.2s;
+            transition: transform 0.2s;
         }
 
         #sendBtn:hover {
@@ -173,42 +315,273 @@
     </style>
 </head>
 <body>
-    <div class="chat-container">
-        <div class="chat-header">
+    <div class="container">
+        <div class="header">
             <h1>💬 Chatbot IA</h1>
         </div>
 
-        <div class="chat-messages" id="chatMessages">
-            <div class="message bot">
-                <div class="message-content">
-                    Bonjour ! Je suis votre assistant IA. Comment puis-je vous aider aujourd'hui ?
-                </div>
+        <!-- AUTH SCREEN -->
+        <div class="auth-container" id="authContainer">
+            <div class="auth-tabs">
+                <button class="auth-tab active" onclick="switchTab('login')">Connexion</button>
+                <button class="auth-tab" onclick="switchTab('register')">Inscription</button>
             </div>
+
+            <div class="error-message" id="errorMessage"></div>
+            <div class="success-message" id="successMessage"></div>
+
+            <!-- LOGIN FORM -->
+            <form class="auth-form active" id="loginForm" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="loginEmail" required>
+                </div>
+                <div class="form-group">
+                    <label>Mot de passe</label>
+                    <input type="password" id="loginPassword" required>
+                </div>
+                <button type="submit" class="auth-btn" id="loginBtn">Se connecter</button>
+            </form>
+
+            <!-- REGISTER FORM -->
+            <form class="auth-form" id="registerForm" onsubmit="handleRegister(event)">
+                <div class="form-group">
+                    <label>Nom</label>
+                    <input type="text" id="registerName" required>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="registerEmail" required>
+                </div>
+                <div class="form-group">
+                    <label>Mot de passe</label>
+                    <input type="password" id="registerPassword" required minlength="6">
+                </div>
+                <div class="form-group">
+                    <label>Confirmer le mot de passe</label>
+                    <input type="password" id="registerPasswordConfirm" required minlength="6">
+                </div>
+                <button type="submit" class="auth-btn" id="registerBtn">Créer un compte</button>
+            </form>
         </div>
 
-        <div class="chat-input-container">
-            <input type="text" id="userInput" placeholder="Tapez votre message...">
-            <button id="sendBtn">Envoyer</button>
+        <!-- CHAT SCREEN -->
+        <div class="chat-container" id="chatContainer">
+            <div class="chat-user-info">
+                <span class="user-name" id="userName"></span>
+                <button class="logout-btn" onclick="handleLogout()">Déconnexion</button>
+            </div>
+
+            <div class="chat-messages" id="chatMessages">
+                <div class="message bot">
+                    <div class="message-content">
+                        Bonjour ! Je suis votre assistant IA. Comment puis-je vous aider aujourd'hui ?
+                    </div>
+                </div>
+            </div>
+
+            <div class="chat-input-container">
+                <input type="text" id="userInput" placeholder="Tapez votre message...">
+                <button id="sendBtn" onclick="sendMessage()">Envoyer</button>
+            </div>
         </div>
     </div>
 
     <script>
         // ========================================
-        // CONFIGURATION - MODIFIEZ UNIQUEMENT CETTE LIGNE
+        // CONFIGURATION
         // ========================================
         const WEBHOOK_URL = 'https://n8n.prcz.fr/webhook/messagerie-n8n';
         
         // ========================================
-        // ÉLÉMENTS DOM
+        // ÉTAT DE L'APPLICATION
         // ========================================
-        const chatMessages = document.getElementById('chatMessages');
-        const userInput = document.getElementById('userInput');
-        const sendBtn = document.getElementById('sendBtn');
+        let currentUser = null;
 
         // ========================================
-        // GESTION DES MESSAGES
+        // INITIALISATION
+        // ========================================
+        window.onload = function() {
+            const savedUser = localStorage.getItem('chatbot_user');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                showChatScreen();
+            }
+        };
+
+        // ========================================
+        // GESTION DES ONGLETS
+        // ========================================
+        function switchTab(tab) {
+            const tabs = document.querySelectorAll('.auth-tab');
+            const forms = document.querySelectorAll('.auth-form');
+            
+            tabs.forEach(t => t.classList.remove('active'));
+            forms.forEach(f => f.classList.remove('active'));
+            
+            if (tab === 'login') {
+                tabs[0].classList.add('active');
+                document.getElementById('loginForm').classList.add('active');
+            } else {
+                tabs[1].classList.add('active');
+                document.getElementById('registerForm').classList.add('active');
+            }
+            
+            hideMessages();
+        }
+
+        // ========================================
+        // GESTION DES MESSAGES D'ERREUR
+        // ========================================
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.classList.add('show');
+            setTimeout(() => errorDiv.classList.remove('show'), 5000);
+        }
+
+        function showSuccess(message) {
+            const successDiv = document.getElementById('successMessage');
+            successDiv.textContent = message;
+            successDiv.classList.add('show');
+            setTimeout(() => successDiv.classList.remove('show'), 5000);
+        }
+
+        function hideMessages() {
+            document.getElementById('errorMessage').classList.remove('show');
+            document.getElementById('successMessage').classList.remove('show');
+        }
+
+        // ========================================
+        // INSCRIPTION
+        // ========================================
+        async function handleRegister(event) {
+            event.preventDefault();
+            
+            const name = document.getElementById('registerName').value.trim();
+            const email = document.getElementById('registerEmail').value.trim();
+            const password = document.getElementById('registerPassword').value;
+            const passwordConfirm = document.getElementById('registerPasswordConfirm').value;
+            
+            if (password !== passwordConfirm) {
+                showError('Les mots de passe ne correspondent pas');
+                return;
+            }
+            
+            const registerBtn = document.getElementById('registerBtn');
+            registerBtn.disabled = true;
+            registerBtn.textContent = 'Création en cours...';
+            
+            try {
+                const response = await fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'register',
+                        name: name,
+                        email: email,
+                        password: password
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    showSuccess('Compte créé avec succès ! Vous pouvez maintenant vous connecter.');
+                    setTimeout(() => {
+                        switchTab('login');
+                        document.getElementById('loginEmail').value = email;
+                    }, 2000);
+                } else {
+                    showError(data.message || 'Erreur lors de la création du compte');
+                }
+            } catch (error) {
+                showError('Erreur de connexion au serveur');
+                console.error('Erreur:', error);
+            } finally {
+                registerBtn.disabled = false;
+                registerBtn.textContent = 'Créer un compte';
+            }
+        }
+
+        // ========================================
+        // CONNEXION
+        // ========================================
+        async function handleLogin(event) {
+            event.preventDefault();
+            
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            
+            const loginBtn = document.getElementById('loginBtn');
+            loginBtn.disabled = true;
+            loginBtn.textContent = 'Connexion...';
+            
+            try {
+                const response = await fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'login',
+                        email: email,
+                        password: password
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    currentUser = {
+                        id: data.userId,
+                        name: data.name,
+                        email: data.email
+                    };
+                    localStorage.setItem('chatbot_user', JSON.stringify(currentUser));
+                    showChatScreen();
+                } else {
+                    showError(data.message || 'Email ou mot de passe incorrect');
+                }
+            } catch (error) {
+                showError('Erreur de connexion au serveur');
+                console.error('Erreur:', error);
+            } finally {
+                loginBtn.disabled = false;
+                loginBtn.textContent = 'Se connecter';
+            }
+        }
+
+        // ========================================
+        // DÉCONNEXION
+        // ========================================
+        function handleLogout() {
+            currentUser = null;
+            localStorage.removeItem('chatbot_user');
+            document.getElementById('chatContainer').classList.remove('active');
+            document.getElementById('authContainer').style.display = 'block';
+            document.getElementById('chatMessages').innerHTML = `
+                <div class="message bot">
+                    <div class="message-content">
+                        Bonjour ! Je suis votre assistant IA. Comment puis-je vous aider aujourd'hui ?
+                    </div>
+                </div>
+            `;
+        }
+
+        // ========================================
+        // AFFICHAGE DU CHAT
+        // ========================================
+        function showChatScreen() {
+            document.getElementById('authContainer').style.display = 'none';
+            document.getElementById('chatContainer').classList.add('active');
+            document.getElementById('userName').textContent = `👤 ${currentUser.name}`;
+            document.getElementById('userInput').focus();
+        }
+
+        // ========================================
+        // GESTION DU CHAT
         // ========================================
         function addMessage(text, isUser) {
+            const chatMessages = document.getElementById('chatMessages');
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${isUser ? 'user' : 'bot'}`;
             
@@ -222,6 +595,7 @@
         }
 
         function showTypingIndicator() {
+            const chatMessages = document.getElementById('chatMessages');
             const typingDiv = document.createElement('div');
             typingDiv.className = 'message bot';
             typingDiv.id = 'typing-indicator';
@@ -240,26 +614,27 @@
             if (typing) typing.remove();
         }
 
-        // ========================================
-        // ENVOI DES MESSAGES
-        // ========================================
         async function sendMessage() {
+            const userInput = document.getElementById('userInput');
             const message = userInput.value.trim();
             
             if (!message) return;
 
             addMessage(message, true);
             userInput.value = '';
+            
+            const sendBtn = document.getElementById('sendBtn');
             sendBtn.disabled = true;
             showTypingIndicator();
 
             try {
                 const response = await fetch(WEBHOOK_URL, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
+                        action: 'chat',
+                        userId: currentUser.id,
+                        userName: currentUser.name,
                         message: message,
                         timestamp: new Date().toISOString()
                     })
@@ -268,14 +643,13 @@
                 const data = await response.json();
                 removeTypingIndicator();
                 
-                // Récupère la réponse selon différents formats possibles
-                const botResponse = data.response || data.message || data.output || data.text ||
+                const botResponse = data.response || data.message || 
                                   'Désolé, je n\'ai pas pu traiter votre demande.';
                 
                 addMessage(botResponse, false);
             } catch (error) {
                 removeTypingIndicator();
-                addMessage('Erreur de connexion. Vérifiez votre URL webhook N8N.', false);
+                addMessage('Erreur de connexion au serveur.', false);
                 console.error('Erreur:', error);
             } finally {
                 sendBtn.disabled = false;
@@ -283,19 +657,17 @@
             }
         }
 
-        // ========================================
-        // ÉVÉNEMENTS
-        // ========================================
-        sendBtn.addEventListener('click', sendMessage);
-        
-        userInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                sendMessage();
+        // ENTER pour envoyer
+        document.addEventListener('DOMContentLoaded', function() {
+            const userInput = document.getElementById('userInput');
+            if (userInput) {
+                userInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        sendMessage();
+                    }
+                });
             }
         });
-
-        // Focus automatique sur l'input au chargement
-        userInput.focus();
     </script>
 </body>
 </html>
