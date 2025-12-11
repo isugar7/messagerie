@@ -1,118 +1,10 @@
-
-chatbot en ligne
-/
-j'aimerai créer un chatbot en ligne, pour ce faire il me faudrait une page html en conséquences, je vais faire la liste des éléments nécessaires:
-
-une première partie Création / connexion de compte
-la possibilité de pouvoir récuperer les données de connexion sur n8n
-une fois le compte créé, une partie discussion avec l'ia
-13:47
-
-Architected complete HTML chatbot with authentication and n8n integration.
-30s
-
-
-
-
-Je vais créer une page HTML complète pour votre chatbot avec authentification et intégration n8n. Voici ce que je vais inclure :
-
-Chatbot avec Authentification N8N
-Artéfact interactif 
-Parfait ! J'ai créé votre chatbot avec toutes les fonctionnalités demandées. Voici ce qui est inclus :
-
-✨ Fonctionnalités
-1. Authentification complète
-
-Création de compte avec nom, email et mot de passe
-Connexion sécurisée
-Validation des formulaires
-2. Intégration N8N
-
-Champ pour configurer l'URL de votre webhook N8N
-Envoi automatique des données lors de :
-Création de compte (action: 'register')
-Connexion (action: 'login')
-Envoi de messages (action: 'message')
-3. Interface de chat
-
-Messages en temps réel
-Design moderne et responsive
-Réponses simulées de l'IA (à remplacer par votre propre API)
-🔧 Configuration N8N
-Pour connecter à N8N, créez un webhook dans n8n et collez l'URL dans le champ prévu. Les données envoyées incluent :
-
-json
-{
-  "action": "register|login|message",
-  "name": "Nom utilisateur",
-  "email": "email@exemple.com",
-  "message": "contenu du message",
-  "timestamp": "2024-XX-XX..."
-}
-📝 Notes importantes
-Les données sont stockées en mémoire (elles disparaîtront au rafraîchissement de la page)
-Pour une utilisation en production, vous devrez :
-Ajouter un backend pour stocker les utilisateurs
-Intégrer une vraie API d'IA (OpenAI, Anthropic, etc.)
-Implémenter une sécurité renforcée
-Voulez-vous que j'ajoute ou modifie quelque chose ?
-
-j'aimerai que l'url du webhook soit fixe dans le code
-
-13:49
-
-2 étapes
-
-Restructured webhook integration to hardcode URL constant.
-
-
-Orchestrated hardcoding webhook URL into codebase.
-
-Chatbot avec Authentification N8N
-Artéfact interactif ∙ Version 5 
-Parfait ! J'ai modifié le code pour que l'URL du webhook N8N soit fixe. Voici ce qui a changé :
-
-🔧 Modifications apportées
-Suppression du champ de configuration - Plus besoin de saisir l'URL manuellement
-URL fixe dans le code - L'URL est définie au début du script JavaScript :
-javascript
-const N8N_WEBHOOK_URL = 'https://votre-instance.n8n.cloud/webhook/votre-webhook-id';
-📝 Pour configurer votre webhook
-Il vous suffit de remplacer la valeur de N8N_WEBHOOK_URL dans le code avec votre URL réelle de webhook N8N, par exemple :
-
-javascript
-const N8N_WEBHOOK_URL = 'https://mon-n8n.app.n8n.cloud/webhook/abc123';
-Le code vérifie automatiquement si l'URL est configurée avant d'envoyer les données, et affiche des messages dans la console du navigateur pour le débogage.
-
-C'est tout bon pour vous ? 🚀
-
-peux tu m'expliquer comme je vais devoir faire pour récupérer les données des comptes ? je compte utiliser supabase
-
-13:49
-
-Réfléchissant à la récupération de données de comptes avec Supabase
-
-
-Excellente idée d'utiliser Supabase ! Voici comme
-
-
-
-Souhaitez-vous être averti lorsque Claude répond ?
-
-
-
-
-
-
-chatbot en ligne
-
-Claude est une IA et peut faire des erreurs. Veuillez vérifier les réponses.
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chatbot IA</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         * {
             margin: 0;
@@ -218,17 +110,9 @@ Claude est une IA et peut faire des erreurs. Veuillez vérifier les réponses.
             background: #5568d3;
         }
 
-        .n8n-config {
-            margin-top: 20px;
-            padding: 15px;
-            background: #f8f9fa;
-            border-radius: 8px;
-        }
-
-        .n8n-config h3 {
-            color: #667eea;
-            font-size: 14px;
-            margin-bottom: 10px;
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
         }
 
         .chat-container {
@@ -248,6 +132,11 @@ Claude est une IA et peut faire des erreurs. Veuillez vérifier les réponses.
 
         .chat-header h2 {
             font-size: 20px;
+        }
+
+        .user-info {
+            font-size: 14px;
+            opacity: 0.9;
         }
 
         .logout-btn {
@@ -349,6 +238,22 @@ Claude est une IA et peut faire des erreurs. Veuillez vérifier les réponses.
         .hidden {
             display: none;
         }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #667eea;
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 12px;
+            margin-top: 20px;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #1976d2;
+        }
     </style>
 </head>
 <body>
@@ -375,16 +280,12 @@ Claude est une IA et peut faire des erreurs. Veuillez vérifier les réponses.
                     <label>Mot de passe</label>
                     <input type="password" id="loginPassword" required>
                 </div>
-                <button type="submit" class="btn">Se connecter</button>
+                <button type="submit" class="btn" id="loginBtn">Se connecter</button>
                 <div id="loginError" class="error hidden"></div>
             </form>
 
             <!-- Formulaire d'inscription -->
             <form id="registerForm" class="hidden">
-                <div class="form-group">
-                    <label>Nom complet</label>
-                    <input type="text" id="registerName" required>
-                </div>
                 <div class="form-group">
                     <label>Email</label>
                     <input type="email" id="registerEmail" required>
@@ -392,19 +293,25 @@ Claude est une IA et peut faire des erreurs. Veuillez vérifier les réponses.
                 <div class="form-group">
                     <label>Mot de passe</label>
                     <input type="password" id="registerPassword" required minlength="6">
+                    <small style="color: #666;">Minimum 6 caractères</small>
                 </div>
-                <button type="submit" class="btn">Créer mon compte</button>
+                <button type="submit" class="btn" id="registerBtn">Créer mon compte</button>
                 <div id="registerError" class="error hidden"></div>
                 <div id="registerSuccess" class="success hidden"></div>
             </form>
 
-
+            <div class="info-box">
+                💡 <strong>Astuce :</strong> Après inscription, vérifiez votre email pour confirmer votre compte (selon la configuration Supabase).
+            </div>
         </div>
 
         <!-- Interface de chat -->
         <div id="chatContainer" class="chat-container">
             <div class="chat-header">
-                <h2>Chat avec l'IA</h2>
+                <div>
+                    <h2>Chat avec l'IA</h2>
+                    <div class="user-info" id="userInfo"></div>
+                </div>
                 <button class="logout-btn" onclick="logout()">Déconnexion</button>
             </div>
             <div id="messages" class="messages">
@@ -422,12 +329,26 @@ Claude est une IA et peut faire des erreurs. Veuillez vérifier les réponses.
     </div>
 
     <script>
-        // Stockage en mémoire (pas de localStorage)
-        let users = {};
-        let currentUser = null;
-        
-        // URL du webhook N8N (à configurer)
+        // 🔧 CONFIGURATION - Remplacez par vos valeurs Supabase
+        const SUPABASE_URL = 'https://votre-projet.supabase.co';
+        const SUPABASE_ANON_KEY = 'votre-cle-publique-anon';
         const N8N_WEBHOOK_URL = 'https://votre-instance.n8n.cloud/webhook/votre-webhook-id';
+
+        // Initialiser Supabase
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let currentUser = null;
+
+        // Vérifier si un utilisateur est déjà connecté au chargement
+        checkUser();
+
+        async function checkUser() {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                currentUser = user;
+                showChat();
+            }
+        }
 
         // Gestion des onglets
         function switchTab(tab) {
@@ -453,101 +374,106 @@ Claude est une IA et peut faire des erreurs. Veuillez vérifier les réponses.
             document.getElementById('registerSuccess').classList.add('hidden');
         }
 
-        // Connexion
+        // Inscription avec Supabase Auth
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            const errorDiv = document.getElementById('registerError');
+            const successDiv = document.getElementById('registerSuccess');
+            const btn = document.getElementById('registerBtn');
+
+            btn.disabled = true;
+            btn.textContent = 'Création en cours...';
+            errorDiv.classList.add('hidden');
+            successDiv.classList.add('hidden');
+
+            try {
+                const { data, error } = await supabase.auth.signUp({
+                    email: email,
+                    password: password
+                });
+
+                if (error) throw error;
+
+                // Envoyer à N8N
+                await sendToN8N({
+                    action: 'register',
+                    email: email,
+                    user_id: data.user?.id,
+                    timestamp: new Date().toISOString()
+                });
+
+                successDiv.textContent = 'Compte créé avec succès ! Vérifiez votre email pour confirmer votre compte.';
+                successDiv.classList.remove('hidden');
+                document.getElementById('registerForm').reset();
+
+                // Basculer vers connexion après 3 secondes
+                setTimeout(() => {
+                    switchTab('login');
+                    successDiv.classList.add('hidden');
+                }, 3000);
+
+            } catch (error) {
+                errorDiv.textContent = error.message || 'Erreur lors de la création du compte';
+                errorDiv.classList.remove('hidden');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Créer mon compte';
+            }
+        });
+
+        // Connexion avec Supabase Auth
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
             const errorDiv = document.getElementById('loginError');
+            const btn = document.getElementById('loginBtn');
 
-            if (users[email] && users[email].password === password) {
-                currentUser = users[email];
-                
-                // Envoyer les données à N8N si configuré
+            btn.disabled = true;
+            btn.textContent = 'Connexion...';
+            errorDiv.classList.add('hidden');
+
+            try {
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email: email,
+                    password: password
+                });
+
+                if (error) throw error;
+
+                currentUser = data.user;
+
+                // Envoyer à N8N
                 await sendToN8N({
                     action: 'login',
                     email: email,
-                    name: currentUser.name,
+                    user_id: data.user.id,
                     timestamp: new Date().toISOString()
                 });
 
                 showChat();
-                errorDiv.classList.add('hidden');
-            } else {
+
+            } catch (error) {
                 errorDiv.textContent = 'Email ou mot de passe incorrect';
                 errorDiv.classList.remove('hidden');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Se connecter';
             }
         });
-
-        // Inscription
-        document.getElementById('registerForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const name = document.getElementById('registerName').value;
-            const email = document.getElementById('registerEmail').value;
-            const password = document.getElementById('registerPassword').value;
-            const errorDiv = document.getElementById('registerError');
-            const successDiv = document.getElementById('registerSuccess');
-
-            if (users[email]) {
-                errorDiv.textContent = 'Cet email est déjà utilisé';
-                errorDiv.classList.remove('hidden');
-                successDiv.classList.add('hidden');
-                return;
-            }
-
-            users[email] = { name, email, password };
-
-            // Envoyer les données à N8N si configuré
-            await sendToN8N({
-                action: 'register',
-                name: name,
-                email: email,
-                timestamp: new Date().toISOString()
-            });
-
-            successDiv.textContent = 'Compte créé avec succès ! Vous pouvez maintenant vous connecter.';
-            successDiv.classList.remove('hidden');
-            errorDiv.classList.add('hidden');
-
-            // Réinitialiser le formulaire
-            document.getElementById('registerForm').reset();
-
-            // Basculer vers l'onglet connexion après 2 secondes
-            setTimeout(() => {
-                switchTab('login');
-                successDiv.classList.add('hidden');
-            }, 2000);
-        });
-
-        // Envoyer les données à N8N
-        async function sendToN8N(data) {
-            if (!N8N_WEBHOOK_URL || N8N_WEBHOOK_URL.includes('votre-instance')) {
-                console.log('N8N webhook non configuré');
-                return;
-            }
-
-            try {
-                await fetch(N8N_WEBHOOK_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(data)
-                });
-                console.log('Données envoyées à N8N:', data);
-            } catch (error) {
-                console.error('Erreur lors de l\'envoi à N8N:', error);
-            }
-        }
 
         // Afficher l'interface de chat
         function showChat() {
             document.getElementById('authContainer').style.display = 'none';
             document.getElementById('chatContainer').style.display = 'flex';
+            document.getElementById('userInfo').textContent = `Connecté en tant que ${currentUser.email}`;
         }
 
         // Déconnexion
-        function logout() {
+        async function logout() {
+            await supabase.auth.signOut();
             currentUser = null;
             document.getElementById('authContainer').style.display = 'block';
             document.getElementById('chatContainer').style.display = 'none';
@@ -572,8 +498,8 @@ Claude est une IA et peut faire des erreurs. Veuillez vérifier les réponses.
             addMessage(message, 'user');
             input.value = '';
 
-            // Simuler une réponse de l'IA (vous pouvez intégrer votre propre API ici)
-            setTimeout(() => {
+            // Simuler une réponse de l'IA
+            setTimeout(async () => {
                 const responses = [
                     "C'est une excellente question ! Laissez-moi y réfléchir...",
                     "Je comprends votre demande. Voici ce que je peux vous dire...",
@@ -584,15 +510,60 @@ Claude est une IA et peut faire des erreurs. Veuillez vérifier les réponses.
                 const randomResponse = responses[Math.floor(Math.random() * responses.length)];
                 addMessage(randomResponse, 'bot');
 
-                // Envoyer le message à N8N
-                sendToN8N({
+                // Sauvegarder le message dans Supabase (optionnel)
+                await saveMessageToSupabase(message, randomResponse);
+
+                // Envoyer à N8N
+                await sendToN8N({
                     action: 'message',
-                    user: currentUser.email,
+                    user_email: currentUser.email,
+                    user_id: currentUser.id,
                     message: message,
                     response: randomResponse,
                     timestamp: new Date().toISOString()
                 });
             }, 1000);
+        }
+
+        // Sauvegarder les messages dans Supabase (optionnel)
+        async function saveMessageToSupabase(userMessage, botResponse) {
+            try {
+                const { error } = await supabase
+                    .from('messages')
+                    .insert({
+                        user_id: currentUser.id,
+                        user_email: currentUser.email,
+                        message: userMessage,
+                        response: botResponse
+                    });
+
+                if (error) {
+                    console.log('Note: Table messages non créée ou erreur:', error.message);
+                }
+            } catch (error) {
+                console.log('Sauvegarde des messages désactivée');
+            }
+        }
+
+        // Envoyer les données à N8N
+        async function sendToN8N(data) {
+            if (!N8N_WEBHOOK_URL || N8N_WEBHOOK_URL.includes('votre-instance')) {
+                console.log('N8N webhook non configuré');
+                return;
+            }
+
+            try {
+                await fetch(N8N_WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                console.log('Données envoyées à N8N:', data);
+            } catch (error) {
+                console.error('Erreur lors de l\'envoi à N8N:', error);
+            }
         }
 
         // Ajouter un message au chat
